@@ -5,6 +5,7 @@ services:
     image: mariadb:latest
     container_name: db
     restart: always
+
     environment:
       MARIADB_ROOT_PASSWORD: asdf1234
       MARIADB_DATABASE: relay
@@ -12,7 +13,9 @@ services:
       - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
-      -
+    healthcheck:
+      test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "--password=asdf1234"]
+
   # Backend container must be named relay-backend
   relay-backend:
     build: ./relay-backend
@@ -45,3 +48,4 @@ services:
 # Persistent volumes
 volumes:
   mariadb_data:
+
