@@ -10,6 +10,7 @@ import org.springframework.web.server.ResponseStatusException;
 import oth.ics.wtp.relaybackend.WeakCrypto;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
+import oth.ics.wtp.relaybackend.repositories.FollowRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FollowServiceTest {
     @Autowired private FollowService followService;
     @Autowired private UserRepository userRepository;
+    @Autowired private FollowRepository followRepository;
 
     @BeforeEach
     public void setup() {
@@ -34,11 +36,8 @@ public class FollowServiceTest {
         assertTrue(followService.isFollowing("user1", "user2"));
         assertFalse(followService.isFollowing("user2", "user1"));
 
-        User user1 = userRepository.findById("user1").get();
-        User user2 = userRepository.findById("user2").get();
-
-        assertEquals(1, user1.getFollowing().size());
-        assertEquals(1, user2.getFollowers().size());
+        assertEquals(1, followRepository.countByFollowerUsername("user1"));
+        assertEquals(1, followRepository.countByFollowedUsername("user2"));
     }
 
     @Test
@@ -70,11 +69,8 @@ public class FollowServiceTest {
         followService.unfollowUser("user1", "user2");
         assertFalse(followService.isFollowing("user1", "user2"));
 
-        User user1 = userRepository.findById("user1").get();
-        User user2 = userRepository.findById("user2").get();
-
-        assertEquals(0, user1.getFollowing().size());
-        assertEquals(0, user2.getFollowers().size());
+        assertEquals(0, followRepository.countByFollowerUsername("user1"));
+        assertEquals(0, followRepository.countByFollowedUsername("user2"));
     }
 
     @Test
@@ -89,16 +85,12 @@ public class FollowServiceTest {
         followService.followUser("user1", "user3");
         followService.followUser("user2", "user3");
 
-        User user1 = userRepository.findById("user1").get();
-        User user2 = userRepository.findById("user2").get();
-        User user3 = userRepository.findById("user3").get();
-
-        assertEquals(2, user1.getFollowing().size());
-        assertEquals(0, user1.getFollowers().size());
-        assertEquals(1, user2.getFollowing().size());
-        assertEquals(1, user2.getFollowers().size());
-        assertEquals(0, user3.getFollowing().size());
-        assertEquals(2, user3.getFollowers().size());
+        assertEquals(2, followRepository.countByFollowerUsername("user1"));
+        assertEquals(0, followRepository.countByFollowedUsername("user1"));
+        assertEquals(1, followRepository.countByFollowerUsername("user2"));
+        assertEquals(1, followRepository.countByFollowedUsername("user2"));
+        assertEquals(0, followRepository.countByFollowerUsername("user3"));
+        assertEquals(2, followRepository.countByFollowedUsername("user3"));
     }
 
     @Test

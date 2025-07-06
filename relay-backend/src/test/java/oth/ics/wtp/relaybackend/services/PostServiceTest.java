@@ -162,7 +162,8 @@ public class PostServiceTest {
         postService.createPost(new CreatePostDto("User2 post"), "user2");
 
         List<PostDto> timeline = postService.getTimelinePosts("user1");
-        // Timeline should only show posts from followed users, but user1 doesn't follow user2
-        assertEquals(0, timeline.size());
+        // Timeline should show user's own posts (1) but not posts from unfollowed users
+        assertEquals(1, timeline.size());
+        assertEquals("User1 post", timeline.get(0).content());
     }
 } 
