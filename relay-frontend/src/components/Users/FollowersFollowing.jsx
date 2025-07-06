@@ -17,15 +17,16 @@ function FollowersFollowing({ username, onUserClick }) {
             setError(null)
             
             try {
-                if (activeTab === 'followers') {
-                    const data = await httpClient.getFollowers(username)
-                    setFollowers(data)
-                } else {
-                    const data = await httpClient.getFollowing(username)
-                    setFollowing(data)
-                }
+                // Load both followers and following data
+                const [followersData, followingData] = await Promise.all([
+                    httpClient.getFollowers(username),
+                    httpClient.getFollowing(username)
+                ])
+                
+                setFollowers(followersData)
+                setFollowing(followingData)
             } catch (err) {
-                console.error(`Failed to load ${activeTab}:`, err)
+                console.error(`Failed to load data:`, err)
                 setError(err.message)
             } finally {
                 setLoading(false)
@@ -33,7 +34,7 @@ function FollowersFollowing({ username, onUserClick }) {
         }
 
         loadData()
-    }, [username, activeTab])
+    }, [username])
 
     const handleFollow = async (targetUsername, isFollowing) => {
         try {

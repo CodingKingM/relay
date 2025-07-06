@@ -22,19 +22,25 @@ function MyProfilePage() {
     const username = user?.username
     const { data: posts, loading: postsLoading, error: postsError } = useApi(username ? `/posts/user/${username}` : null, [username])
 
-    useEffect(() => {
+    const fetchProfile = async () => {
         setLoading(true)
-        httpClient.get('/users/me')
-            .then(data => {
-                setProfile(data)
-                setForm({
-                    fullName: data.fullName || '',
-                    email: data.email || '',
-                    biography: data.biography || ''
-                })
+        try {
+            const data = await httpClient.get('/users/me')
+            setProfile(data)
+            setForm({
+                fullName: data.fullName || '',
+                email: data.email || '',
+                biography: data.biography || ''
             })
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false))
+        } catch (err) {
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchProfile()
     }, [])
 
     const handleChange = e => {
@@ -64,6 +70,10 @@ function MyProfilePage() {
         }
     }
 
+    const handleFollowersFollowingClose = () => {
+        setShowFollowersFollowing(false)
+    }
+
     if (loading) return <div className="loading">Loading profile...</div>
     if (error) return <div className="error-message">{error}</div>
     if (!profile) return null
@@ -90,13 +100,31 @@ function MyProfilePage() {
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
                         <button 
                             className="follow-count-button"
-                            onClick={() => setShowFollowersFollowing(true)}
+                            onClick={async () => {
+                                console.log('Before fetch - Following count:', profile.followingCount)
+                                await fetchProfile()
+                                console.log('After fetch - Following count:', profile.followingCount)
+                                // Force a small delay to ensure state update is processed
+                                setTimeout(() => {
+                                    console.log('Before modal - Following count:', profile.followingCount)
+                                    setShowFollowersFollowing(true)
+                                }, 0)
+                            }}
                         >
                             <b>Followers:</b> {profile.followerCount || 0}
                         </button>
                         <button 
                             className="follow-count-button"
-                            onClick={() => setShowFollowersFollowing(true)}
+                            onClick={async () => {
+                                console.log('Before fetch - Following count:', profile.followingCount)
+                                await fetchProfile()
+                                console.log('After fetch - Following count:', profile.followingCount)
+                                // Force a small delay to ensure state update is processed
+                                setTimeout(() => {
+                                    console.log('Before modal - Following count:', profile.followingCount)
+                                    setShowFollowersFollowing(true)
+                                }, 0)
+                            }}
                         >
                             <b>Following:</b> {profile.followingCount || 0}
                         </button>
@@ -156,20 +184,20 @@ function MyProfilePage() {
         </div>
 
         {showFollowersFollowing && (
-            <div className="modal-overlay" onClick={() => setShowFollowersFollowing(false)}>
+            <div className="modal-overlay" onClick={handleFollowersFollowingClose}>
                 <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                     <div className="modal-header">
                         <h3>Followers & Following</h3>
                         <button 
                             className="modal-close"
-                            onClick={() => setShowFollowersFollowing(false)}
+                            onClick={handleFollowersFollowingClose}
                         >
                             ×
                         </button>
                     </div>
                     <FollowersFollowing 
                         username={username} 
-                        onUserClick={() => setShowFollowersFollowing(false)}
+                        onUserClick={handleFollowersFollowingClose}
                     />
                 </div>
             </div>

@@ -74,11 +74,14 @@ public class UserService {
     }
 
     private UserDto toDto(User user) {
+        int followerCount = (int) followRepository.countByFollowedUsername(user.getUsername());
+        int followingCount = (int) followRepository.countByFollowerUsername(user.getUsername());
+        
         return new UserDto(
                 user.getUsername(),
                 user.getRegisteredAt().atZone(java.time.ZoneId.systemDefault()).toInstant(),
-                (int) followRepository.countByFollowedUsername(user.getUsername()),
-                (int) followRepository.countByFollowerUsername(user.getUsername()),
+                followerCount,
+                followingCount,
                 user.getFullName(),
                 user.getEmail(),
                 user.getBiography()
