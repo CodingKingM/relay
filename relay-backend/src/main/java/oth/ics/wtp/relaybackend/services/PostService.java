@@ -107,32 +107,18 @@ public class PostService {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        System.out.println("DEBUG: Attempting to delete like for user='" + username + "', postId=" + postId);
-        System.out.println("DEBUG: Likes for post before delete:");
-        likeRepository.findAll().stream()
-            .filter(l -> l.getPost().equals(postId))
-            .forEach(l -> System.out.println("  Like: user='" + l.getUser() + "', post=" + l.getPost()));
-
         likeRepository.deleteByUserAndPost(username, postId);
         likeRepository.flush();
         postRepository.findById(postId); // Reload post to update like count
-        System.out.println("DEBUG: Likes for post after delete:");
-        likeRepository.findAll().stream()
-            .filter(l -> l.getPost().equals(postId))
-            .forEach(l -> System.out.println("  Like: user='" + l.getUser() + "', post=" + l.getPost()));
-        System.out.println("DEBUG: Like count after delete: " + likeRepository.countByPost(postId));
     }
 
     @Transactional
     public void deletePost(Long postId, String username) {
-        System.out.println("DEBUG: Starting delete for post " + postId);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
-        
-        System.out.println("DEBUG: Post found, deleting...");
         
         // Use native SQL to ensure deletion with correct column names
         entityManager.createNativeQuery("DELETE FROM likes WHERE post_id = :postId")
@@ -148,10 +134,6 @@ public class PostService {
                 .executeUpdate();
         
         entityManager.flush();
-        
-        // Verify deletion
-        boolean exists = postRepository.existsById(postId);
-        System.out.println("DEBUG: Post exists after delete? " + exists);
     }
 
     public List<CommentDto> getCommentsForPost(Long postId) {
