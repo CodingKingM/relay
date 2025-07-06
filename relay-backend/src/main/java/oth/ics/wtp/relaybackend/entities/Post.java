@@ -90,6 +90,10 @@ public class Post {
         return comments;
     }
 
+    public List<Like> getLikes() {
+        return likes;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -40,9 +40,9 @@ function CommentList({ postId, currentUser, onCommentDeleted, refresh }) {
                 <li key={comment.id} className="comment-item">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div>
-                            <span className="comment-author">{comment.user.username}</span>:
+                            <span className="comment-author">{comment.username}</span>:
                             <span className="comment-content"> {comment.content}</span>
-                            {currentUser === comment.user.username && (
+                            {currentUser === comment.username && (
                                 <button
                                     className="delete-comment-button"
                                     onClick={() => handleDelete(comment.id)}

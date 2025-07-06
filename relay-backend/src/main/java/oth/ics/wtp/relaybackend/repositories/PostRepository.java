@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import oth.ics.wtp.relaybackend.entities.Post;
+import oth.ics.wtp.relaybackend.entities.Follow;
 import java.util.List;
 
 @Repository
@@ -13,7 +14,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByAuthorUsernameOrderByCreatedAtDesc(String username, Pageable pageable);
 
     @Query("SELECT p FROM Post p WHERE p.author IN " +
-            "(SELECT u.following FROM User u WHERE u.username = :username) " +
+            "(SELECT f.followed FROM Follow f WHERE f.follower.username = :username) " +
             "ORDER BY p.createdAt DESC")
     List<Post> findFollowedUsersPosts(@Param("username") String username, Pageable pageable);
 }

@@ -37,19 +37,8 @@ public class User {
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
-    @ManyToMany(fetch = EAGER, cascade = {PERSIST, MERGE})
-    @JoinTable(
-            name = "user_follows",
-            joinColumns = @JoinColumn(name = "follower_username"),
-            inverseJoinColumns = @JoinColumn(name = "followed_username"),
-            uniqueConstraints = @UniqueConstraint(columnNames = {"follower_username", "followed_username"})
-    )
-    @JsonIgnore
-    private List<User> following = new ArrayList<>();
-
-    @ManyToMany(mappedBy = "following", fetch = EAGER)
-    @JsonIgnore
-    private List<User> followers = new ArrayList<>();
+    // Removed ManyToMany relationship to avoid conflict with Follow entity
+    // The Follow entity will handle the follow relationships
 
     @OneToMany(mappedBy = "user", fetch = EAGER, cascade = ALL, orphanRemoval = true)
     @JsonIgnore
@@ -77,13 +66,7 @@ public class User {
         return registeredAt;
     }
 
-    public List<User> getFollowing() {
-        return following;
-    }
-
-    public List<User> getFollowers() {
-        return followers;
-    }
+    // Following and followers are now handled by the Follow entity
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }

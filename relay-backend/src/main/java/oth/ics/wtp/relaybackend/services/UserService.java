@@ -9,6 +9,7 @@ import oth.ics.wtp.relaybackend.dtos.UserDto;
 import oth.ics.wtp.relaybackend.dtos.UserSearchDto;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
+import oth.ics.wtp.relaybackend.repositories.FollowRepository;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +18,11 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
+        this.followRepository = followRepository;
     }
 
     public UserDto createUser(CreateUserDto createUserDto) {
@@ -74,8 +77,8 @@ public class UserService {
         return new UserDto(
                 user.getUsername(),
                 user.getRegisteredAt().atZone(java.time.ZoneId.systemDefault()).toInstant(),
-                user.getFollowers().size(),
-                user.getFollowing().size(),
+                (int) followRepository.countByFollowedUsername(user.getUsername()),
+                (int) followRepository.countByFollowerUsername(user.getUsername()),
                 user.getFullName(),
                 user.getEmail(),
                 user.getBiography()
@@ -85,10 +88,7 @@ public class UserService {
     private UserSearchDto toSearchDto(User user, String currentUsername) {
         boolean isFollowing = false;
         if (currentUsername != null) {
-            User currentUser = userRepository.findById(currentUsername).orElse(null);
-            if (currentUser != null) {
-                isFollowing = currentUser.getFollowing().contains(user);
-            }
+            isFollowing = followRepository.existsByFollowerUsernameAndFollowedUsername(currentUsername, user.getUsername());
         }
 
         return new UserSearchDto(
@@ -101,18 +101,16 @@ public class UserService {
     public List<UserSearchDto> getFollowers(String username) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        
-        return user.getFollowers().stream()
-                .map(follower -> toSearchDto(follower, username))
+        return followRepository.findFollowersByUsername(username).stream()
+                .map(followerFollow -> toSearchDto(followerFollow.getFollower(), username))
                 .collect(Collectors.toList());
     }
 
     public List<UserSearchDto> getFollowing(String username) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-        
-        return user.getFollowing().stream()
-                .map(following -> toSearchDto(following, username))
+        return followRepository.findFollowingByUsername(username).stream()
+                .map(followingFollow -> toSearchDto(followingFollow.getFollowed(), username))
                 .collect(Collectors.toList());
     }
 }

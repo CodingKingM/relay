@@ -16,6 +16,7 @@ import oth.ics.wtp.relaybackend.repositories.PostRepository;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
 import oth.ics.wtp.relaybackend.repositories.CommentRepository;
 import org.springframework.transaction.annotation.Transactional;
+import oth.ics.wtp.relaybackend.dtos.CommentDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -127,20 +128,29 @@ public class PostService {
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
+        
+        // Clear the collections to ensure proper cascade deletion
+        post.getLikes().clear();
+        post.getComments().clear();
+        
         postRepository.delete(post);
         postRepository.flush();
+        
         boolean exists = postRepository.existsById(postId);
         System.out.println("DEBUG: Post exists after delete? " + exists);
         System.out.println("DEBUG: Post deleted via repository, JPA cascade should handle children.");
     }
 
-    public List<Comment> getCommentsForPost(Long postId) {
+    public List<CommentDto> getCommentsForPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
-        return commentRepository.findByPostOrderByCreatedAtAsc(post);
+        return commentRepository.findByPostOrderByCreatedAtAsc(post)
+                .stream()
+                .map(this::toCommentDto)
+                .collect(Collectors.toList());
     }
 
-    public Comment addCommentToPost(Long postId, String username, String content) {
+    public CommentDto addCommentToPost(Long postId, String username, String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment content cannot be empty");
         }
@@ -152,7 +162,8 @@ public class PostService {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         Comment comment = new Comment(post, user, content.trim());
-        return commentRepository.save(comment);
+        Comment saved = commentRepository.save(comment);
+        return toCommentDto(saved);
     }
 
     @Transactional
@@ -180,6 +191,15 @@ public class PostService {
                 post.getCreatedAt(),
                 likeCount,
                 isLiked
+        );
+    }
+
+    private CommentDto toCommentDto(Comment comment) {
+        return new CommentDto(
+            comment.getId(),
+            comment.getContent(),
+            comment.getCreatedAt(),
+            comment.getUser().getUsername()
         );
     }
 }
