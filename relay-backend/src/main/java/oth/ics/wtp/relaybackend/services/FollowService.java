@@ -5,15 +5,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import oth.ics.wtp.relaybackend.entities.User;
+import oth.ics.wtp.relaybackend.entities.Follow;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
+import oth.ics.wtp.relaybackend.repositories.FollowRepository;
 
 @Service
 public class FollowService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
 
-    public FollowService(UserRepository userRepository) {
+    public FollowService(UserRepository userRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
+        this.followRepository = followRepository;
     }
 
     @Transactional
@@ -28,15 +32,12 @@ public class FollowService {
         User followed = userRepository.findById(followedUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User to follow not found"));
 
-        if (follower.getFollowing().contains(followed)) {
+        if (followRepository.existsByFollowerUsernameAndFollowedUsername(followerUsername, followedUsername)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Already following this user");
         }
 
-        follower.getFollowing().add(followed);
-        followed.getFollowers().add(follower);
-
-        userRepository.save(follower);
-        userRepository.save(followed);
+        Follow follow = new Follow(follower, followed);
+        followRepository.save(follow);
     }
 
     @Transactional
@@ -47,15 +48,12 @@ public class FollowService {
         User followed = userRepository.findById(followedUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User to unfollow not found"));
 
-        if (!follower.getFollowing().contains(followed)) {
+        if (!followRepository.existsByFollowerUsernameAndFollowedUsername(followerUsername, followedUsername)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Not following this user");
         }
 
-        follower.getFollowing().remove(followed);
-        followed.getFollowers().remove(follower);
-
-        userRepository.save(follower);
-        userRepository.save(followed);
+        Follow.FollowId followId = new Follow.FollowId(followerUsername, followedUsername);
+        followRepository.deleteById(followId);
     }
 
     public boolean isFollowing(String followerUsername, String followedUsername) {
@@ -65,6 +63,6 @@ public class FollowService {
         User followed = userRepository.findById(followedUsername)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return follower.getFollowing().contains(followed);
+        return followRepository.existsByFollowerUsernameAndFollowedUsername(followerUsername, followedUsername);
     }
 }
