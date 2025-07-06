@@ -1,6 +1,5 @@
 package oth.ics.wtp.relaybackend.services;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 import oth.ics.wtp.relaybackend.dtos.*;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
-import oth.ics.wtp.relaybackend.repositories.FollowRepository;
 
 import java.util.List;
 
@@ -23,31 +21,23 @@ public class UserServiceTest {
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
     @Autowired private FollowService followService;
-    @Autowired private FollowRepository followRepository;
-
-    @BeforeEach
-    public void setup() {
-        // Clean up all data first
-        followRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     @Test
     public void testCreateUser() {
-        CreateUserDto dto = new CreateUserDto("newuser123", "password123");
+        CreateUserDto dto = new CreateUserDto("newuser", "password123");
         UserDto created = userService.createUser(dto);
 
-        assertEquals("newuser123", created.username());
+        assertEquals("newuser", created.username());
         assertNotNull(created.registeredAt());
         assertEquals(0, created.followerCount());
         assertEquals(0, created.followingCount());
 
-        assertTrue(userRepository.existsByUsername("newuser123"));
+        assertTrue(userRepository.existsByUsername("newuser"));
     }
 
     @Test
     public void testCreateDuplicateUser() {
-        CreateUserDto dto = new CreateUserDto("duplicate123", "pass");
+        CreateUserDto dto = new CreateUserDto("duplicate", "pass");
         userService.createUser(dto);
 
         assertThrows(ResponseStatusException.class,
@@ -56,11 +46,11 @@ public class UserServiceTest {
 
     @Test
     public void testGetUserByUsername() {
-        CreateUserDto dto = new CreateUserDto("gettest123", "pass");
+        CreateUserDto dto = new CreateUserDto("gettest", "pass");
         userService.createUser(dto);
 
-        UserDto retrieved = userService.getUserByUsername("gettest123");
-        assertEquals("gettest123", retrieved.username());
+        UserDto retrieved = userService.getUserByUsername("gettest");
+        assertEquals("gettest", retrieved.username());
     }
 
     @Test
@@ -71,37 +61,37 @@ public class UserServiceTest {
 
     @Test
     public void testSearchUsers() {
-        userService.createUser(new CreateUserDto("alice123", "pass"));
-        userService.createUser(new CreateUserDto("alex123", "pass"));
-        userService.createUser(new CreateUserDto("bob123", "pass"));
+        userService.createUser(new CreateUserDto("alice", "pass"));
+        userService.createUser(new CreateUserDto("alex", "pass"));
+        userService.createUser(new CreateUserDto("bob", "pass"));
 
         List<UserSearchDto> results = userService.searchUsers("al", null);
         assertEquals(2, results.size());
 
         results = userService.searchUsers("b", null);
         assertEquals(1, results.size());
-        assertEquals("bob123", results.get(0).username());
+        assertEquals("bob", results.get(0).username());
     }
 
     @Test
     public void testSearchUsersWithFollowStatus() {
-        userService.createUser(new CreateUserDto("searcher123", "pass"));
-        userService.createUser(new CreateUserDto("target123", "pass"));
+        userService.createUser(new CreateUserDto("searcher", "pass"));
+        userService.createUser(new CreateUserDto("target", "pass"));
 
-        followService.followUser("searcher123", "target123");
+        followService.followUser("searcher", "target");
 
-        List<UserSearchDto> results = userService.searchUsers("target", "searcher123");
+        List<UserSearchDto> results = userService.searchUsers("target", "searcher");
         assertEquals(1, results.size());
         assertTrue(results.get(0).isFollowing());
     }
 
     @Test
     public void testDeleteUser() {
-        userService.createUser(new CreateUserDto("todelete123", "pass"));
-        assertTrue(userService.userExists("todelete123"));
+        userService.createUser(new CreateUserDto("todelete", "pass"));
+        assertTrue(userService.userExists("todelete"));
 
-        userService.deleteUser("todelete123");
-        assertFalse(userService.userExists("todelete123"));
+        userService.deleteUser("todelete");
+        assertFalse(userService.userExists("todelete"));
     }
 
     @Test
@@ -112,16 +102,16 @@ public class UserServiceTest {
 
     @Test
     public void testUserDtoIncludesFollowerCounts() {
-        userService.createUser(new CreateUserDto("popular123", "pass"));
-        userService.createUser(new CreateUserDto("follower1123", "pass"));
-        userService.createUser(new CreateUserDto("follower2123", "pass"));
+        userService.createUser(new CreateUserDto("popular", "pass"));
+        userService.createUser(new CreateUserDto("follower1", "pass"));
+        userService.createUser(new CreateUserDto("follower2", "pass"));
 
-        followService.followUser("follower1123", "popular123");
-        followService.followUser("follower2123", "popular123");
-        followService.followUser("popular123", "follower1123");
+        followService.followUser("follower1", "popular");
+        followService.followUser("follower2", "popular");
+        followService.followUser("popular", "follower1");
 
-        UserDto dto = userService.getUserByUsername("popular123");
+        UserDto dto = userService.getUserByUsername("popular");
         assertEquals(2, dto.followerCount());
         assertEquals(1, dto.followingCount());
     }
-}
+} 

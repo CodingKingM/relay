@@ -22,7 +22,7 @@ public class Follow {
     @JoinColumn(name = "followed_username", nullable = false)
     private User followed;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime followedAt;
 
     public Follow() {
@@ -63,12 +63,7 @@ public class Follow {
         private String follower;
         private String followed;
 
-        public FollowId() {}
 
-        public FollowId(String follower, String followed) {
-            this.follower = follower;
-            this.followed = followed;
-        }
 
         public String getFollower() {
             return follower;

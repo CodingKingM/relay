@@ -34,7 +34,7 @@ public abstract class RelayControllerTestBase {
     @Autowired protected UserRepository userRepository;
     @Autowired protected PostRepository postRepository;
     @Autowired protected LikeRepository likeRepository;
-    @Autowired protected FollowRepository followRepository;
+    @Autowired protected CommentRepository commentRepository;
     @Autowired protected UserController userController;
 
     private final Map<String, HttpSession> sessions = new HashMap<>();
@@ -56,8 +56,8 @@ public abstract class RelayControllerTestBase {
     }
 
     private void cleanDatabase() {
+        commentRepository.deleteAll();
         likeRepository.deleteAll();
-        followRepository.deleteAll();
         postRepository.deleteAll();
         userRepository.deleteAll();
     }

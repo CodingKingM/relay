@@ -59,29 +59,6 @@ public class Like {
         this.post = post;
     }
 
-    public User getUserEntity() {
-        return userEntity;
-    }
-
-    public void setUserEntity(User userEntity) {
-        this.userEntity = userEntity;
-    }
-
-    public Post getPostEntity() {
-        return postEntity;
-    }
-
-    public void setPostEntity(Post postEntity) {
-        this.postEntity = postEntity;
-    }
-
-    public LocalDateTime getLikedAt() {
-        return likedAt;
-    }
-
-    public void setLikedAt(LocalDateTime likedAt) {
-        this.likedAt = likedAt;
-    }
 
     public static class LikeId implements Serializable {
         private String user;
@@ -89,10 +66,6 @@ public class Like {
 
         public LikeId() {}
 
-        public LikeId(String user, Long post) {
-            this.user = user;
-            this.post = post;
-        }
 
         public String getUser() {
             return user;
