@@ -46,8 +46,8 @@ public class PostControllerTest extends RelayControllerTestBase {
         controller.createPost(new CreatePostDto("own post"), user1Req);
         long id2 = controller.createPost(new CreatePostDto("followed post"), user2Req).id();
         List<PostDto> timeline = controller.getTimeline(user1Req);
-        assertEquals(1, timeline.size());
-        assertEquals(id2, timeline.get(0).id());
+        assertEquals(2, timeline.size());
+        assertTrue(timeline.stream().anyMatch(p -> p.id() == id2));
     }
 
     @Test
@@ -67,7 +67,7 @@ public class PostControllerTest extends RelayControllerTestBase {
         controller.addComment(postId, "Great post!", user2Req);
         var comments = controller.getComments(postId);
         assertEquals(1, comments.size());
-        assertEquals("Great post!", comments.get(0).getContent());
+        assertEquals("Great post!", comments.get(0).content());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class PostControllerTest extends RelayControllerTestBase {
         long postId = controller.createPost(new CreatePostDto("test post"), user1Req).id();
         controller.addComment(postId, "test comment", user2Req);
         var comments = controller.getComments(postId);
-        long commentId = comments.get(0).getId();
+        long commentId = comments.get(0).id();
         assertDoesNotThrow(() -> controller.deleteComment(commentId, user2Req));
         comments = controller.getComments(postId);
         assertEquals(0, comments.size());

@@ -17,6 +17,7 @@ import oth.ics.wtp.relaybackend.repositories.UserRepository;
 import oth.ics.wtp.relaybackend.repositories.CommentRepository;
 import org.springframework.transaction.annotation.Transactional;
 import oth.ics.wtp.relaybackend.dtos.CommentDto;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,12 +29,14 @@ public class PostService {
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
     private final CommentRepository commentRepository;
+    private final EntityManager entityManager;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, CommentRepository commentRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, CommentRepository commentRepository, EntityManager entityManager) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
         this.commentRepository = commentRepository;
+        this.entityManager = entityManager;
     }
 
     public PostDto createPost(CreatePostDto createPostDto, String username) {
@@ -129,16 +132,13 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
         
-        // Clear the collections to ensure proper cascade deletion
-        post.getLikes().clear();
-        post.getComments().clear();
-        
-        postRepository.delete(post);
-        postRepository.flush();
+        // Use EntityManager to ensure proper deletion
+        entityManager.remove(post);
+        entityManager.flush();
         
         boolean exists = postRepository.existsById(postId);
         System.out.println("DEBUG: Post exists after delete? " + exists);
-        System.out.println("DEBUG: Post deleted via repository, JPA cascade should handle children.");
+        System.out.println("DEBUG: Post deleted via EntityManager.");
     }
 
     public List<CommentDto> getCommentsForPost(Long postId) {
