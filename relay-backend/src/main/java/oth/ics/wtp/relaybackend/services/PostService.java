@@ -125,15 +125,33 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long postId, String username) {
+        System.out.println("DEBUG: Starting delete for post " + postId);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
         
-        // Delete the post using the repository
-        postRepository.delete(post);
-        postRepository.flush();
+        System.out.println("DEBUG: Post found, deleting...");
+        
+        // Use native SQL to ensure deletion with correct column names
+        entityManager.createNativeQuery("DELETE FROM likes WHERE post_id = :postId")
+                .setParameter("postId", postId)
+                .executeUpdate();
+        
+        entityManager.createNativeQuery("DELETE FROM comments WHERE post_id = :postId")
+                .setParameter("postId", postId)
+                .executeUpdate();
+        
+        entityManager.createNativeQuery("DELETE FROM posts WHERE id = :postId")
+                .setParameter("postId", postId)
+                .executeUpdate();
+        
+        entityManager.flush();
+        
+        // Verify deletion
+        boolean exists = postRepository.existsById(postId);
+        System.out.println("DEBUG: Post exists after delete? " + exists);
     }
 
     public List<CommentDto> getCommentsForPost(Long postId) {
