@@ -125,20 +125,15 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long postId, String username) {
-        System.out.println("DEBUG: Looking up post id=" + postId);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
         
-        // Use EntityManager to ensure proper deletion
-        entityManager.remove(post);
-        entityManager.flush();
-        
-        boolean exists = postRepository.existsById(postId);
-        System.out.println("DEBUG: Post exists after delete? " + exists);
-        System.out.println("DEBUG: Post deleted via EntityManager.");
+        // Delete the post using the repository
+        postRepository.delete(post);
+        postRepository.flush();
     }
 
     public List<CommentDto> getCommentsForPost(Long postId) {
