@@ -34,13 +34,18 @@ public class Like {
         this.likedAt = LocalDateTime.now();
     }
 
+    public Like(User user, Long post) {
+        this.user = user.getUsername();
+        this.post = post;
+        this.likedAt = LocalDateTime.now();
+    }
+
     public Like(User userEntity, Post postEntity) {
         this.user = userEntity.getUsername();
         this.post = postEntity.getId();
         this.userEntity = userEntity;
         this.postEntity = postEntity;
         this.likedAt = LocalDateTime.now();
-        System.out.println("DEBUG: Creating Like with user=" + this.user + ", post=" + this.post);
     }
 
     public String getUser() {

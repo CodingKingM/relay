@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import oth.ics.wtp.relaybackend.dtos.CreatePostDto;
 import oth.ics.wtp.relaybackend.dtos.PostDto;
@@ -70,11 +71,10 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletePost(@PathVariable Long postId, HttpServletRequest request) {
-        System.out.println("DEBUG: Entered PostController.deletePost for postId=" + postId);
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId, HttpServletRequest request) {
         User currentUser = authService.getAuthenticatedUser(request);
         postService.deletePost(postId, currentUser.getUsername());
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{postId}/comments")
