@@ -91,4 +91,23 @@ public class UserController {
         User currentUser = authService.getAuthenticatedUser(request);
         followService.unfollowUser(currentUser.getUsername(), username);
     }
+
+    @SecurityRequirement(name = "basicAuth")
+    @GetMapping("/me")
+    public UserDto getCurrentUserProfile(HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
+        return userService.getUserByUsername(user.getUsername());
+    }
+
+    @SecurityRequirement(name = "basicAuth")
+    @PutMapping("/me")
+    public UserDto updateCurrentUserProfile(@RequestBody UserDto userDto, HttpServletRequest request) {
+        User user = authService.getAuthenticatedUser(request);
+        return userService.updateUserProfile(
+            user.getUsername(),
+            userDto.fullName(),
+            userDto.email(),
+            userDto.biography()
+        );
+    }
 }

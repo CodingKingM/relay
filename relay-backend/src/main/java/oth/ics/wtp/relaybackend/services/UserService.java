@@ -60,12 +60,25 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
+    public UserDto updateUserProfile(String username, String fullName, String email, String biography) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        user.setFullName(fullName);
+        user.setEmail(email);
+        user.setBiography(biography);
+        userRepository.save(user);
+        return toDto(user);
+    }
+
     private UserDto toDto(User user) {
         return new UserDto(
                 user.getUsername(),
-                user.getRegisteredAt(),
+                user.getRegisteredAt().atZone(java.time.ZoneId.systemDefault()).toInstant(),
                 user.getFollowers().size(),
-                user.getFollowing().size()
+                user.getFollowing().size(),
+                user.getFullName(),
+                user.getEmail(),
+                user.getBiography()
         );
     }
 

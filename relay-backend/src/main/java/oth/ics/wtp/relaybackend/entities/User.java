@@ -8,6 +8,7 @@ import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.FetchType.LAZY;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "relay_users")
@@ -20,10 +21,20 @@ public class User {
     @Column(nullable = false)
     private String hashedPassword;
 
+    @Column(nullable = true, length = 100)
+    private String fullName;
+
+    @Column(nullable = true, length = 100)
+    private String email;
+
+    @Column(nullable = true, length = 500)
+    private String biography;
+
     @Column(nullable = false)
     private LocalDateTime registeredAt;
 
     @OneToMany(mappedBy = "author", fetch = EAGER, cascade = ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
     @ManyToMany(fetch = EAGER, cascade = {PERSIST, MERGE})
@@ -33,12 +44,15 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "followed_username"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"follower_username", "followed_username"})
     )
+    @JsonIgnore
     private List<User> following = new ArrayList<>();
 
     @ManyToMany(mappedBy = "following", fetch = EAGER)
+    @JsonIgnore
     private List<User> followers = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = EAGER, cascade = ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Like> likes = new ArrayList<>();
 
     public User() {
@@ -71,6 +85,14 @@ public class User {
         return followers;
     }
 
+    public String getFullName() { return fullName; }
+    public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getBiography() { return biography; }
+    public void setBiography(String biography) { this.biography = biography; }
+
+    public List<Post> getPosts() { return posts; }
 
     @Override
     public boolean equals(Object o) {
