@@ -25,7 +25,7 @@ public class AuthServiceTest {
 
     @BeforeEach
     public void setup() {
-        User user = new User("authtest", WeakCrypto.hashPassword("testpass"));
+        User user = new User("authtest123", WeakCrypto.hashPassword("testpass"));
         userRepository.save(user);
     }
 
@@ -33,20 +33,20 @@ public class AuthServiceTest {
     public void testSuccessfulLogin() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:testpass"));
+                WeakCrypto.base64encode("authtest123:testpass"));
 
         User loggedInUser = authService.logIn(request);
-        assertEquals("authtest", loggedInUser.getUsername());
+        assertEquals("authtest123", loggedInUser.getUsername());
 
         HttpSession session = request.getSession();
-        assertEquals("authtest", session.getAttribute("userName"));
+        assertEquals("authtest123", session.getAttribute("userName"));
     }
 
     @Test
     public void testLoginWithWrongPassword() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:wrongpass"));
+                WeakCrypto.base64encode("authtest123:wrongpass"));
 
         assertThrows(ResponseStatusException.class, () -> authService.logIn(request));
     }
@@ -67,10 +67,40 @@ public class AuthServiceTest {
     }
 
     @Test
+    public void testLoginWithInvalidAuthHeader() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "InvalidHeader");
+        assertThrows(ResponseStatusException.class, () -> authService.logIn(request));
+    }
+
+    @Test
+    public void testLoginWithNonBasicAuth() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer token");
+        assertThrows(ResponseStatusException.class, () -> authService.logIn(request));
+    }
+
+    @Test
+    public void testLoginWithMalformedCredentials() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
+                WeakCrypto.base64encode("malformed"));
+        assertThrows(ResponseStatusException.class, () -> authService.logIn(request));
+    }
+
+    @Test
+    public void testLoginWithEmptyCredentials() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
+                WeakCrypto.base64encode(":"));
+        assertThrows(ResponseStatusException.class, () -> authService.logIn(request));
+    }
+
+    @Test
     public void testLogout() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:testpass"));
+                WeakCrypto.base64encode("authtest123:testpass"));
 
         authService.logIn(request);
         authService.logOut(request);
@@ -79,14 +109,20 @@ public class AuthServiceTest {
     }
 
     @Test
+    public void testLogoutWithoutLogin() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertDoesNotThrow(() -> authService.logOut(request));
+    }
+
+    @Test
     public void testGetAuthenticatedUser() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:testpass"));
+                WeakCrypto.base64encode("authtest123:testpass"));
 
         authService.logIn(request);
         User user = authService.getAuthenticatedUser(request);
-        assertEquals("authtest", user.getUsername());
+        assertEquals("authtest123", user.getUsername());
     }
 
     @Test
@@ -97,27 +133,80 @@ public class AuthServiceTest {
     }
 
     @Test
+    public void testGetAuthenticatedUserWithInvalidSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
+                WeakCrypto.base64encode("authtest123:testpass"));
+
+        authService.logIn(request);
+        
+        // Delete the user from database to simulate invalid session
+        userRepository.deleteById("authtest123");
+        
+        assertThrows(ResponseStatusException.class,
+                () -> authService.getAuthenticatedUser(request));
+    }
+
+    @Test
     public void testIsAuthenticated() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         assertFalse(authService.isAuthenticated(request));
 
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:testpass"));
+                WeakCrypto.base64encode("authtest123:testpass"));
         authService.logIn(request);
 
         assertTrue(authService.isAuthenticated(request));
     }
 
     @Test
+    public void testIsAuthenticatedWithInvalidSession() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
+                WeakCrypto.base64encode("authtest123:testpass"));
+
+        authService.logIn(request);
+        
+        // Delete the user from database to simulate invalid session
+        userRepository.deleteById("authtest123");
+        
+        assertFalse(authService.isAuthenticated(request));
+    }
+
+    @Test
     public void testRequireUser() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-                WeakCrypto.base64encode("authtest:testpass"));
+                WeakCrypto.base64encode("authtest123:testpass"));
         authService.logIn(request);
 
-        assertDoesNotThrow(() -> authService.requireUser(request, "authtest"));
+        assertDoesNotThrow(() -> authService.requireUser(request, "authtest123"));
         assertThrows(ResponseStatusException.class,
                 () -> authService.requireUser(request, "otheruser"));
+    }
+
+    @Test
+    public void testRequireUserNotAuthenticated() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertThrows(ResponseStatusException.class,
+                () -> authService.requireUser(request, "authtest123"));
+    }
+
+    @Test
+    public void testGetAuthenticatedUsername() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " +
+                WeakCrypto.base64encode("authtest123:testpass"));
+
+        authService.logIn(request);
+        assertTrue(authService.getAuthenticatedUsername(request).isPresent());
+        assertEquals("authtest123", authService.getAuthenticatedUsername(request).get());
+    }
+
+    @Test
+    public void testGetAuthenticatedUsernameNotLoggedIn() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        assertTrue(authService.getAuthenticatedUsername(request).isEmpty());
     }
 
     @Test
@@ -136,5 +225,38 @@ public class AuthServiceTest {
         assertNull(authService.parseBasicAuth(null));
         assertNull(authService.parseBasicAuth("InvalidHeader"));
         assertNull(authService.parseBasicAuth("Basic invalid_base64"));
+    }
+
+    @Test
+    public void testParseBasicAuthWithColonInPassword() {
+        String authHeader = "Basic " + WeakCrypto.base64encode("user:pass:word");
+        String[] parsed = authService.parseBasicAuth(authHeader);
+
+        assertNotNull(parsed);
+        assertEquals(2, parsed.length);
+        assertEquals("user", parsed[0]);
+        assertEquals("pass:word", parsed[1]);
+    }
+
+    @Test
+    public void testParseBasicAuthWithEmptyUsername() {
+        String authHeader = "Basic " + WeakCrypto.base64encode(":password");
+        String[] parsed = authService.parseBasicAuth(authHeader);
+
+        assertNotNull(parsed);
+        assertEquals(2, parsed.length);
+        assertEquals("", parsed[0]);
+        assertEquals("password", parsed[1]);
+    }
+
+    @Test
+    public void testParseBasicAuthWithEmptyPassword() {
+        String authHeader = "Basic " + WeakCrypto.base64encode("username:");
+        String[] parsed = authService.parseBasicAuth(authHeader);
+
+        assertNotNull(parsed);
+        assertEquals(2, parsed.length);
+        assertEquals("username", parsed[0]);
+        assertEquals("", parsed[1]);
     }
 }

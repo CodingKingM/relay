@@ -12,14 +12,20 @@ import static jakarta.persistence.FetchType.EAGER;
 public class Like {
 
     @Id
-    @ManyToOne(fetch = EAGER, optional = false)
-    @JoinColumn(name = "user_username", nullable = false)
-    private User user;
+    @Column(name = "user_username", nullable = false)
+    private String user;
 
     @Id
+    @Column(name = "post_id", nullable = false)
+    private Long post;
+
     @ManyToOne(fetch = EAGER, optional = false)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "user_username", referencedColumnName = "username", insertable = false, updatable = false)
+    private User userEntity;
+
+    @ManyToOne(fetch = EAGER, optional = false)
+    @JoinColumn(name = "post_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private Post postEntity;
 
     @Column(nullable = false)
     private LocalDateTime likedAt;
@@ -28,26 +34,45 @@ public class Like {
         this.likedAt = LocalDateTime.now();
     }
 
-    public Like(User user, Post post) {
-        this.user = user;
-        this.post = post;
+    public Like(User userEntity, Post postEntity) {
+        this.user = userEntity.getUsername();
+        this.post = postEntity.getId();
+        this.userEntity = userEntity;
+        this.postEntity = postEntity;
         this.likedAt = LocalDateTime.now();
+        System.out.println("DEBUG: Creating Like with user=" + this.user + ", post=" + this.post);
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
-    public Post getPost() {
+    public Long getPost() {
         return post;
     }
 
-    public void setPost(Post post) {
+    public void setPost(Long post) {
         this.post = post;
+    }
+
+    public User getUserEntity() {
+        return userEntity;
+    }
+
+    public void setUserEntity(User userEntity) {
+        this.userEntity = userEntity;
+    }
+
+    public Post getPostEntity() {
+        return postEntity;
+    }
+
+    public void setPostEntity(Post postEntity) {
+        this.postEntity = postEntity;
     }
 
     public LocalDateTime getLikedAt() {

@@ -13,6 +13,7 @@ import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.LikeRepository;
 import oth.ics.wtp.relaybackend.repositories.PostRepository;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,16 +81,17 @@ public class PostService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot like your own post");
         }
 
-        if (likeRepository.existsByUserUsernameAndPostId(username, postId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Post already liked");
+        if (likeRepository.existsByUserAndPost(username, postId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already liked");
         }
-
         Like like = new Like(user, post);
         likeRepository.save(like);
+        postRepository.findById(postId); // Reload post to update like count
 
         return toDto(post, username);
     }
 
+    @Transactional
     public void unlikePost(Long postId, String username) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
@@ -97,22 +99,34 @@ public class PostService {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        Like.LikeId likeId = new Like.LikeId(username, postId);
-        likeRepository.deleteById(likeId);
+        System.out.println("DEBUG: Attempting to delete like for user='" + username + "', postId=" + postId);
+        System.out.println("DEBUG: Likes for post before delete:");
+        likeRepository.findAll().stream()
+            .filter(l -> l.getPost().equals(postId))
+            .forEach(l -> System.out.println("  Like: user='" + l.getUser() + "', post=" + l.getPost()));
+
+        likeRepository.deleteByUserAndPost(username, postId);
+        likeRepository.flush();
+        postRepository.findById(postId); // Reload post to update like count
+        System.out.println("DEBUG: Likes for post after delete:");
+        likeRepository.findAll().stream()
+            .filter(l -> l.getPost().equals(postId))
+            .forEach(l -> System.out.println("  Like: user='" + l.getUser() + "', post=" + l.getPost()));
+        System.out.println("DEBUG: Like count after delete: " + likeRepository.countByPost(postId));
     }
 
     private PostDto toDto(Post post, String currentUsername) {
         boolean isLiked = false;
         if (currentUsername != null) {
-            isLiked = post.isLikedByUser(currentUsername);
+            isLiked = likeRepository.existsByUserAndPost(currentUsername, post.getId());
         }
-
+        int likeCount = likeRepository.countByPost(post.getId());
         return new PostDto(
                 post.getId(),
                 post.getContent(),
                 post.getAuthor().getUsername(),
                 post.getCreatedAt(),
-                post.getLikeCount(),
+                likeCount,
                 isLiked
         );
     }

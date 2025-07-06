@@ -8,6 +8,7 @@ import static jakarta.persistence.FetchType.LAZY;
 import static jakarta.persistence.FetchType.EAGER;
 import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
+import java.util.Objects;
 
 @Entity
 @Table(name = "posts", indexes = {
@@ -30,7 +31,7 @@ public class Post {
     @JoinColumn(name = "author_username", nullable = false)
     private User author;
 
-    @OneToMany(mappedBy = "post", fetch = LAZY, cascade = ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", fetch = EAGER, cascade = ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
     public Post() {
@@ -49,56 +50,49 @@ public class Post {
 
     public boolean isLikedByUser(String username) {
         return likes.stream()
-                .anyMatch(like -> like.getUser().getUsername().equals(username));
+                .anyMatch(like -> like.getUser().equals(username));
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getContent() {
         return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
-        this.author = author;
-    }
-
-    public List<Like> getLikes() {
-        return likes;
-    }
-
-    public void setLikes(List<Like> likes) {
-        this.likes = likes;
-    }
-
     public void addLike(Like like) {
         likes.add(like);
-        like.setPost(this);
+        like.setPost(this.id);
     }
 
     public void removeLike(Like like) {
         likes.remove(like);
         like.setPost(null);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return Objects.equals(id, post.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
