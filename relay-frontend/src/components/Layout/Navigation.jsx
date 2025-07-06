@@ -1,10 +1,14 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import { useTheme } from '../../hooks/useTheme.jsx'
+import { useState } from 'react'
 
 function Navigation() {
     const { isAuthenticated, user, logout } = useAuth()
     const location = useLocation()
     const navigate = useNavigate()
+    const { theme, toggleTheme } = useTheme()
+    const [menuOpen, setMenuOpen] = useState(false)
 
     const handleLogout = async () => {
         await logout()
@@ -17,9 +21,21 @@ function Navigation() {
         <nav className="navbar">
             <div className="nav-container">
                 <Link to="/" className="nav-brand">Relay</Link>
-
-                {isAuthenticated ? (
-                    <ul className="nav-links">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <button
+                        className="burger-menu"
+                        aria-label="Open navigation menu"
+                        aria-expanded={menuOpen}
+                        onClick={() => setMenuOpen(o => !o)}
+                    >
+                        <span className="burger-bar"></span>
+                        <span className="burger-bar"></span>
+                        <span className="burger-bar"></span>
+                    </button>
+                </div>
+                <ul className={`nav-links${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
+                    {isAuthenticated ? (
+                        <>
                         <li>
                             <Link
                                 to="/timeline"
@@ -52,10 +68,7 @@ function Navigation() {
                                 My Profile
                             </Link>
                         </li>
-                        <li>
-                            <span className="nav-link">Hi, {user?.username}</span>
-                        </li>
-                        <li>
+                        <li className="nav-actions">
                             <button
                                 onClick={handleLogout}
                                 className="nav-link"
@@ -63,10 +76,25 @@ function Navigation() {
                             >
                                 Logout
                             </button>
+                            <label className="theme-toggle-switch" aria-label="Toggle dark mode">
+                                <input
+                                    type="checkbox"
+                                    checked={theme === 'dark'}
+                                    onChange={toggleTheme}
+                                />
+                                <span className="slider">
+                                    <span className="icon sun" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                                    </span>
+                                    <span className="icon moon" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </span>
+                                </span>
+                            </label>
                         </li>
-                    </ul>
-                ) : (
-                    <ul className="nav-links">
+                        </>
+                    ) : (
+                        <>
                         <li>
                             <Link
                                 to="/login"
@@ -83,8 +111,27 @@ function Navigation() {
                                 Register
                             </Link>
                         </li>
-                    </ul>
-                )}
+                        <li>
+                            <label className="theme-toggle-switch" aria-label="Toggle dark mode">
+                                <input
+                                    type="checkbox"
+                                    checked={theme === 'dark'}
+                                    onChange={toggleTheme}
+                                />
+                                <span className="slider">
+                                    <span className="icon sun" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke="currentColor" strokeWidth="2"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+                                    </span>
+                                    <span className="icon moon" aria-hidden="true">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1111.21 3a7 7 0 109.79 9.79z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                                    </span>
+                                </span>
+                            </label>
+                        </li>
+                        </>
+                    )}
+                </ul>
+                {menuOpen && <div className="nav-backdrop" onClick={() => setMenuOpen(false)}></div>}
             </div>
         </nav>
     )

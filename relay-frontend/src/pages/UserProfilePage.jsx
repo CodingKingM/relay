@@ -4,6 +4,7 @@ import { useApi } from '../hooks/useApi'
 import { useAuth } from '../hooks/useAuth'
 import { httpClient } from '../utils/httpClient'
 import PostList from '../components/Posts/PostList'
+import FollowersFollowing from '../components/Users/FollowersFollowing'
 
 function UserProfilePage() {
     const { username } = useParams()
@@ -16,6 +17,7 @@ function UserProfilePage() {
     const [isFollowing, setIsFollowing] = useState(false)
     const [followLoading, setFollowLoading] = useState(false)
     const [followError, setFollowError] = useState(null)
+    const [showFollowersFollowing, setShowFollowersFollowing] = useState(false)
 
     useEffect(() => {
         const checkFollowStatus = async () => {
@@ -95,8 +97,18 @@ function UserProfilePage() {
                     {userInfo.biography ? userInfo.biography : <span style={{ color: '#aaa', fontStyle: 'italic' }}>No biography</span>}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
-                    <div><b>Followers:</b> {userInfo.followerCount}</div>
-                    <div><b>Following:</b> {userInfo.followingCount}</div>
+                    <button 
+                        className="follow-count-button"
+                        onClick={() => setShowFollowersFollowing(true)}
+                    >
+                        <b>Followers:</b> {userInfo.followerCount || 0}
+                    </button>
+                    <button 
+                        className="follow-count-button"
+                        onClick={() => setShowFollowersFollowing(true)}
+                    >
+                        <b>Following:</b> {userInfo.followingCount || 0}
+                    </button>
                 </div>
                 {!isOwnProfile && currentUser && (
                     <div style={{ marginTop: '1rem' }}>
@@ -127,6 +139,26 @@ function UserProfilePage() {
 
             <h2 className="page-title" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Posts by {username}</h2>
             <PostList posts={posts || []} />
+
+            {showFollowersFollowing && (
+                <div className="modal-overlay" onClick={() => setShowFollowersFollowing(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3>Followers & Following</h3>
+                            <button 
+                                className="modal-close"
+                                onClick={() => setShowFollowersFollowing(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <FollowersFollowing 
+                            username={username} 
+                            onUserClick={() => setShowFollowersFollowing(false)}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

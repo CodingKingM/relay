@@ -127,11 +127,11 @@ public class PostService {
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
-        // Remove post from author's posts list and save user (orphanRemoval will handle the rest)
-        User author = post.getAuthor();
-        author.getPosts().removeIf(p -> p.getId().equals(postId));
-        userRepository.save(author);
-        System.out.println("DEBUG: Orphan removal should delete post id=" + postId);
+        postRepository.delete(post);
+        postRepository.flush();
+        boolean exists = postRepository.existsById(postId);
+        System.out.println("DEBUG: Post exists after delete? " + exists);
+        System.out.println("DEBUG: Post deleted via repository, JPA cascade should handle children.");
     }
 
     public List<Comment> getCommentsForPost(Long postId) {
@@ -155,13 +155,16 @@ public class PostService {
         return commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteComment(Long commentId, String username) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
         if (!comment.getUser().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own comments");
         }
-        commentRepository.delete(comment);
+        Post post = comment.getPost();
+        post.getComments().remove(comment);
+        postRepository.save(post);
     }
 
     private PostDto toDto(Post post, String currentUsername) {

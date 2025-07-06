@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { httpClient } from '../../utils/httpClient'
+import { useAuth } from '../../hooks/useAuth'
 
 function UserSearch() {
     const [query, setQuery] = useState('')
     const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(false)
     const [searchError, setSearchError] = useState(null)
+    const { user: currentUser } = useAuth()
 
     useEffect(() => {
         const searchUsers = async () => {
@@ -72,7 +74,7 @@ function UserSearch() {
     }
 
     return (
-        <div className="search-container">
+        <div className="search-container" style={{ position: 'relative' }}>
             <input
                 type="text"
                 className="search-input"
@@ -95,20 +97,33 @@ function UserSearch() {
             )}
 
             {!loading && users.length > 0 && (
-                <div className="user-list">
-                    {users.map(user => (
-                        <div key={user.username} className="user-item">
-                            <Link to={`/user/${user.username}`} className="user-info">
-                                {user.username}
-                            </Link>
-                            <button
-                                className={`follow-button ${user.isFollowing ? 'following' : ''}`}
-                                onClick={() => handleFollow(user.username, user.isFollowing)}
-                            >
-                                {user.isFollowing ? 'Unfollow' : 'Follow'}
-                            </button>
-                        </div>
-                    ))}
+                <div className="user-search-dropdown">
+                    <div className="user-list">
+                        {users.map(user => (
+                            <div key={user.username} className="user-item">
+                                <Link to={`/user/${user.username}`} className="user-info">
+                                    {user.username}
+                                </Link>
+                                {(() => {
+                                    const shouldShowButton = currentUser?.username !== user.username;
+                                    console.log('Follow button debug:', {
+                                        currentUser: currentUser?.username,
+                                        userUsername: user.username,
+                                        shouldShowButton,
+                                        isEqual: currentUser?.username === user.username
+                                    });
+                                    return shouldShowButton ? (
+                                        <button
+                                            className={`follow-button ${user.isFollowing ? 'following' : ''}`}
+                                            onClick={() => handleFollow(user.username, user.isFollowing)}
+                                        >
+                                            {user.isFollowing ? 'Unfollow' : 'Follow'}
+                                        </button>
+                                    ) : null;
+                                })()}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

@@ -29,13 +29,13 @@ function CreatePost({ onPostCreated }) {
         <form className="post-form" onSubmit={handleSubmit}>
       <textarea
           className="post-textarea"
-          placeholder="What's on your mind?"
+          placeholder="Relay to the world!"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           maxLength={500}
           disabled={loading}
       />
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="post-form-actions" style={{ justifyContent: 'flex-start' }}>
                 <button
                     type="submit"
                     className="post-button"
@@ -44,8 +44,8 @@ function CreatePost({ onPostCreated }) {
                     {loading ? 'Posting...' : 'Post'}
                 </button>
                 <span style={{ fontSize: '0.875rem', color: '#7f8c8d' }}>
-          {content.length}/500
-        </span>
+                    {content.length}/500
+                </span>
             </div>
         </form>
     )

@@ -110,4 +110,16 @@ public class UserController {
             userDto.biography()
         );
     }
+
+    @SecurityRequirement(name = "basicAuth")
+    @GetMapping(value = "/{username}/followers", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserSearchDto> getFollowers(@PathVariable String username) {
+        return userService.getFollowers(username);
+    }
+
+    @SecurityRequirement(name = "basicAuth")
+    @GetMapping(value = "/{username}/following", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserSearchDto> getFollowing(@PathVariable String username) {
+        return userService.getFollowing(username);
+    }
 }

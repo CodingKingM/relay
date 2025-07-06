@@ -34,6 +34,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = EAGER, cascade = ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = ALL, orphanRemoval = true, fetch = EAGER)
+    private List<Comment> comments = new ArrayList<>();
+
     public Post() {
         this.createdAt = LocalDateTime.now();
     }
@@ -81,6 +84,10 @@ public class Post {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
     }
 
     @Override
