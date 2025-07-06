@@ -97,4 +97,22 @@ public class UserService {
                 isFollowing
         );
     }
+
+    public List<UserSearchDto> getFollowers(String username) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        
+        return user.getFollowers().stream()
+                .map(follower -> toSearchDto(follower, username))
+                .collect(Collectors.toList());
+    }
+
+    public List<UserSearchDto> getFollowing(String username) {
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        
+        return user.getFollowing().stream()
+                .map(following -> toSearchDto(following, username))
+                .collect(Collectors.toList());
+    }
 }

@@ -38,17 +38,20 @@ function CommentList({ postId, currentUser, onCommentDeleted, refresh }) {
         <ul className="comment-list">
             {comments.map(comment => (
                 <li key={comment.id} className="comment-item">
-                    <span className="comment-author">{comment.user.username}</span>:
-                    <span className="comment-content"> {comment.content}</span>
-                    <span className="comment-timestamp"> {new Date(comment.createdAt).toLocaleString()}</span>
-                    {currentUser === comment.user.username && (
-                        <button
-                            className="delete-comment-button"
-                            onClick={() => handleDelete(comment.id)}
-                            title="Delete comment"
-                            style={{ marginLeft: '0.5rem', color: '#e74c3c', background: 'none', border: 'none', cursor: 'pointer' }}
-                        >🗑️</button>
-                    )}
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                            <span className="comment-author">{comment.user.username}</span>:
+                            <span className="comment-content"> {comment.content}</span>
+                            {currentUser === comment.user.username && (
+                                <button
+                                    className="delete-comment-button"
+                                    onClick={() => handleDelete(comment.id)}
+                                    title="Delete comment"
+                                >🗑️</button>
+                            )}
+                        </div>
+                        <span className="comment-timestamp">{new Date(comment.createdAt).toLocaleString()}</span>
+                    </div>
                 </li>
             ))}
         </ul>

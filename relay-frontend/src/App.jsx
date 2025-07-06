@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './hooks/useAuth'
+import { ThemeProvider } from './hooks/useTheme.jsx'
 import Navigation from './components/Layout/Navigation'
 import HomePage from './pages/HomePage'
 import TimelinePage from './pages/TimelinePage'
@@ -46,7 +47,9 @@ function App() {
     return (
         <Router>
             <AuthProvider>
-                <AppContent />
+                <ThemeProvider>
+                    <AppContent />
+                </ThemeProvider>
             </AuthProvider>
         </Router>
     )

@@ -3,6 +3,7 @@ import { httpClient } from '../utils/httpClient'
 import { useAuth } from '../hooks/useAuth'
 import PostList from '../components/Posts/PostList'
 import { useApi } from '../hooks/useApi'
+import FollowersFollowing from '../components/Users/FollowersFollowing'
 
 function MyProfilePage() {
     const { user } = useAuth()
@@ -13,6 +14,7 @@ function MyProfilePage() {
     const [form, setForm] = useState({ fullName: '', email: '', biography: '' })
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
+    const [showFollowersFollowing, setShowFollowersFollowing] = useState(false)
 
     const BIO_WORD_LIMIT = 100;
 
@@ -70,7 +72,6 @@ function MyProfilePage() {
         <>
         <div className="profile-card">
             <div className="profile-avatar">{profile.username.charAt(0).toUpperCase()}</div>
-            <h2 className="form-title" style={{ marginBottom: '1.5rem' }}>My Profile</h2>
             {success && <div className="success-message">Profile updated!</div>}
             {!edit ? (
                 <div>
@@ -84,6 +85,23 @@ function MyProfilePage() {
                     <div className="profile-info" style={{ color: '#555', marginBottom: '1rem' }}>
                         {profile.biography ? profile.biography : <span style={{ color: '#aaa', fontStyle: 'italic' }}>No biography</span>}
                     </div>
+                    
+                    {/* Add follower/following counts */}
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
+                        <button 
+                            className="follow-count-button"
+                            onClick={() => setShowFollowersFollowing(true)}
+                        >
+                            <b>Followers:</b> {profile.followerCount || 0}
+                        </button>
+                        <button 
+                            className="follow-count-button"
+                            onClick={() => setShowFollowersFollowing(true)}
+                        >
+                            <b>Following:</b> {profile.followingCount || 0}
+                        </button>
+                    </div>
+                    
                     <button className="form-button" style={{ marginTop: '1rem' }} onClick={() => setEdit(true)}>Edit Profile</button>
                 </div>
             ) : (
@@ -124,8 +142,8 @@ function MyProfilePage() {
                             {bioOverLimit && <span style={{ marginLeft: '0.5rem' }}>Word limit exceeded!</span>}
                         </div>
                     </div>
-                    <button className="form-button" type="submit" disabled={saving || bioOverLimit}>{saving ? 'Saving...' : 'Save'}</button>
-                    <button className="form-button" type="button" style={{ marginLeft: '1rem', background: '#aaa' }} onClick={() => setEdit(false)} disabled={saving}>Cancel</button>
+                    <button className="form-button" type="submit" disabled={saving || bioOverLimit} style={{ width: '100%' }}>{saving ? 'Saving...' : 'Save'}</button>
+                    <button className="form-button" type="button" style={{ marginTop: '0.75rem', width: '100%', background: '#aaa' }} onClick={() => setEdit(false)} disabled={saving}>Cancel</button>
                 </form>
             )}
             {error && <div className="error-message" style={{ marginTop: '1rem' }}>{error}</div>}
@@ -136,6 +154,26 @@ function MyProfilePage() {
             {postsError && <div className="error-message">Error loading posts: {postsError}</div>}
             {!postsLoading && !postsError && <PostList posts={posts || []} emptyMessage="You haven't posted anything yet." key={posts?.length} />}
         </div>
+
+        {showFollowersFollowing && (
+            <div className="modal-overlay" onClick={() => setShowFollowersFollowing(false)}>
+                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h3>Followers & Following</h3>
+                        <button 
+                            className="modal-close"
+                            onClick={() => setShowFollowersFollowing(false)}
+                        >
+                            ×
+                        </button>
+                    </div>
+                    <FollowersFollowing 
+                        username={username} 
+                        onUserClick={() => setShowFollowersFollowing(false)}
+                    />
+                </div>
+            </div>
+        )}
         </>
     )
 }

@@ -71,6 +71,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePost(@PathVariable Long postId, HttpServletRequest request) {
+        System.out.println("DEBUG: Entered PostController.deletePost for postId=" + postId);
         User currentUser = authService.getAuthenticatedUser(request);
         postService.deletePost(postId, currentUser.getUsername());
     }
