@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import oth.ics.wtp.relaybackend.dtos.CreatePostDto;
 import oth.ics.wtp.relaybackend.dtos.PostDto;
+import oth.ics.wtp.relaybackend.entities.Comment;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.services.AuthService;
 import oth.ics.wtp.relaybackend.services.PostService;
@@ -65,5 +66,31 @@ public class PostController {
             HttpServletRequest request) {
         User currentUser = authService.getAuthenticatedUser(request);
         postService.unlikePost(postId, currentUser.getUsername());
+    }
+
+    @DeleteMapping("/{postId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletePost(@PathVariable Long postId, HttpServletRequest request) {
+        User currentUser = authService.getAuthenticatedUser(request);
+        postService.deletePost(postId, currentUser.getUsername());
+    }
+
+    @GetMapping("/{postId}/comments")
+    public List<Comment> getComments(@PathVariable Long postId) {
+        return postService.getCommentsForPost(postId);
+    }
+
+    @PostMapping("/{postId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Comment addComment(@PathVariable Long postId, @RequestBody String content, HttpServletRequest request) {
+        User currentUser = authService.getAuthenticatedUser(request);
+        return postService.addCommentToPost(postId, currentUser.getUsername(), content);
+    }
+
+    @DeleteMapping("/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(@PathVariable Long commentId, HttpServletRequest request) {
+        User currentUser = authService.getAuthenticatedUser(request);
+        postService.deleteComment(commentId, currentUser.getUsername());
     }
 }

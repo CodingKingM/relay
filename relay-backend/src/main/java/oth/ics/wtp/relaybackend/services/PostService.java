@@ -10,9 +10,11 @@ import oth.ics.wtp.relaybackend.dtos.PostDto;
 import oth.ics.wtp.relaybackend.entities.Like;
 import oth.ics.wtp.relaybackend.entities.Post;
 import oth.ics.wtp.relaybackend.entities.User;
+import oth.ics.wtp.relaybackend.entities.Comment;
 import oth.ics.wtp.relaybackend.repositories.LikeRepository;
 import oth.ics.wtp.relaybackend.repositories.PostRepository;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
+import oth.ics.wtp.relaybackend.repositories.CommentRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,11 +26,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
     private final LikeRepository likeRepository;
+    private final CommentRepository commentRepository;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository, LikeRepository likeRepository, CommentRepository commentRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
+        this.commentRepository = commentRepository;
     }
 
     public PostDto createPost(CreatePostDto createPostDto, String username) {
@@ -113,6 +117,51 @@ public class PostService {
             .filter(l -> l.getPost().equals(postId))
             .forEach(l -> System.out.println("  Like: user='" + l.getUser() + "', post=" + l.getPost()));
         System.out.println("DEBUG: Like count after delete: " + likeRepository.countByPost(postId));
+    }
+
+    @Transactional
+    public void deletePost(Long postId, String username) {
+        System.out.println("DEBUG: Looking up post id=" + postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        if (!post.getAuthor().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
+        }
+        // Remove post from author's posts list and save user (orphanRemoval will handle the rest)
+        User author = post.getAuthor();
+        author.getPosts().removeIf(p -> p.getId().equals(postId));
+        userRepository.save(author);
+        System.out.println("DEBUG: Orphan removal should delete post id=" + postId);
+    }
+
+    public List<Comment> getCommentsForPost(Long postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        return commentRepository.findByPostOrderByCreatedAtAsc(post);
+    }
+
+    public Comment addCommentToPost(Long postId, String username, String content) {
+        if (content == null || content.trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment content cannot be empty");
+        }
+        if (content.length() > 500) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Comment exceeds 500 characters");
+        }
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        Comment comment = new Comment(post, user, content.trim());
+        return commentRepository.save(comment);
+    }
+
+    public void deleteComment(Long commentId, String username) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Comment not found"));
+        if (!comment.getUser().getUsername().equals(username)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own comments");
+        }
+        commentRepository.delete(comment);
     }
 
     private PostDto toDto(Post post, String currentUsername) {

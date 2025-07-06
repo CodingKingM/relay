@@ -1,12 +1,16 @@
 FROM node:23-alpine AS build
+
 ARG API_URL
-ENV API_URL $API_URL
+ENV API_URL=${API_URL}
+
 WORKDIR /usr/src/app
+
 COPY package*.json ./
-RUN npm install
+RUN npm ci
+
 COPY ./ ./
-RUN echo "" > .env
-RUN echo VITE_APP_API_URL="${API_URL}" >> .env
+
+RUN echo "VITE_API_URL=${API_URL}" > .env
 RUN npm run build
 
 FROM nginx:stable-alpine

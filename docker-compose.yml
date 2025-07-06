@@ -48,4 +48,3 @@ services:
 # Persistent volumes
 volumes:
   mariadb_data:
-

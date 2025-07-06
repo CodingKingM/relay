@@ -1,42 +1,436 @@
-#root {
-  max-width: 1280px;
+/* Modern Social App CSS - Clean, Card-Based, Responsive */
+
+body {
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  background: #f4f6fb;
+  color: #222;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background: #2c3e50;
+  color: #fff;
+  padding: 1rem 0;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+}
+
+.nav-container {
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-brand {
+  font-size: 1.7rem;
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+
+.nav-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1.1rem;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  transition: border 0.2s, color 0.2s;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: #dbeafe;
+  border-bottom: 2px solid #fff;
+}
+
+.main-content {
+  flex: 1;
+  padding: 32px 8px 24px 8px;
+  max-width: 700px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.form-container, .post-form, .search-container, .profile-card, .user-item, .post-item {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.form-title, .page-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #444;
+  font-weight: 500;
+}
+
+.form-input, .search-input, .post-textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  background: #f9fafb;
+  transition: border 0.2s;
+}
+
+.form-input:focus, .search-input:focus, .post-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: #fff;
+}
+
+.form-button, .post-button, .follow-button, .toggle-comments-button {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.form-button:hover, .post-button:hover, .follow-button:hover, .toggle-comments-button:hover {
+  background: #1d4ed8;
+}
+
+.form-button:disabled, .post-button:disabled {
+  background: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  background: #f87171;
+  color: #fff;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.success-message {
+  background: #34d399;
+  color: #fff;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.post-item {
+  position: relative;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.7rem;
+}
+
+.post-author {
+  font-weight: bold;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.post-author:hover {
+  text-decoration: underline;
+}
+
+.post-timestamp {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.post-content {
+  margin-bottom: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #222;
+}
+
+.post-actions {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6b7280;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s;
+}
+
+.like-button.liked {
+  color: #e11d48;
+}
+
+.loading, .empty-state {
+  text-align: center;
+  padding: 2.5rem 0;
+  color: #6b7280;
+  font-size: 1.1rem;
+}
+
+.profile-card {
+  max-width: 420px;
+  margin: 2.5rem auto 2rem auto;
+  text-align: center;
+  position: relative;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: #2563eb;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+}
+
+.profile-info {
+  margin-bottom: 1.2rem;
+  color: #374151;
+}
+
+.profile-card .follow-button {
+  margin-top: 1rem;
+}
+
+.user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.user-info:hover {
+  text-decoration: underline;
+}
+
+.delete-post-button {
+  position: static;
+  color: #e74c3c;
+  background: none;
+  border: none;
+  border-radius: 4px;
+  width: auto;
+  height: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  z-index: auto;
+  transition: color 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+  margin-left: 0.3rem;
+}
+
+.delete-post-button:hover {
+  color: #b91c1c;
+  box-shadow: 0 4px 16px rgba(231,76,60,0.12);
+}
+
+@media (max-width: 700px) {
+  .main-content {
+    padding: 10px;
   }
-  to {
-    transform: rotate(360deg);
+  .profile-card {
+    padding: 1.2rem 0.5rem 1.5rem 0.5rem;
+    max-width: 98vw;
+  }
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+  .nav-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .nav-links {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* --- Comments Section (fully matching app colors) --- */
+.comment-list {
+  list-style: none;
+  margin: 1.5rem 0 0 0;
+  padding: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(44,62,80,0.07);
 }
 
-.card {
-  padding: 2em;
+.comment-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem;
+  color: #333;
+  position: relative;
+  background: transparent;
+}
+.comment-item:last-child {
+  border-bottom: none;
 }
 
-.read-the-docs {
-  color: #888;
+.comment-author {
+  font-weight: 600;
+  color: #3498db;
+  margin-right: 0.3rem;
+}
+
+.comment-content {
+  flex: 1;
+  color: #333;
+}
+
+.comment-timestamp {
+  color: #7f8c8d;
+  font-size: 0.92em;
+  margin-left: 0.7rem;
+  white-space: nowrap;
+}
+
+.delete-comment-button {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  cursor: pointer;
+  font-size: 1.1rem;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.delete-comment-button:hover {
+  background: #fbeeea;
+  color: #c0392b;
+}
+
+.comment-form {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1.2rem;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 0.7rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+  font-size: 1rem;
+  background: #fff;
+  transition: border 0.2s;
+  color: #333;
+}
+.comment-input:focus {
+  outline: none;
+  border-color: #3498db;
+}
+
+.comment-submit {
+  background: #2c3e50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.comment-submit:disabled {
+  background: #95a5a6;
+  cursor: not-allowed;
+}
+.comment-submit:hover:not(:disabled) {
+  background: #1a2533;
+}
+/* --- End Comments Section --- */
+
+.toggle-comments-button {
+  background: #f4f6fb;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-left: 0;
+}
+.toggle-comments-button:hover {
+  background: #e5e7eb;
+  color: #2c3e50;
 }
