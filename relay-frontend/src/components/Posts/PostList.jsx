@@ -1,15 +1,20 @@
 import PostItem from './PostItem'
 import { useAuth } from '../../hooks/useAuth'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function PostList({ posts, emptyMessage = 'No posts yet', onPostDeleted }) {
     const { user } = useAuth()
     const [postList, setPostList] = useState(posts)
 
+    // Sync internal state with posts prop
+    useEffect(() => {
+        setPostList(posts)
+    }, [posts])
+
     const handleDelete = (postId) => {
         setPostList(prev => prev.filter(p => p.id !== postId))
         if (typeof onPostDeleted === 'function') {
-            onPostDeleted()
+            onPostDeleted(postId)
         }
     }
 

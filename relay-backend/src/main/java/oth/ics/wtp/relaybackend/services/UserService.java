@@ -102,7 +102,7 @@ public class UserService {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return followRepository.findFollowersByUsername(username).stream()
-                .map(followerFollow -> toSearchDto(followerFollow.getFollower(), username))
+                .map(follower -> toSearchDto(follower, username))
                 .collect(Collectors.toList());
     }
 
@@ -110,7 +110,7 @@ public class UserService {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
         return followRepository.findFollowingByUsername(username).stream()
-                .map(followingFollow -> toSearchDto(followingFollow.getFollowed(), username))
+                .map(following -> toSearchDto(following, username))
                 .collect(Collectors.toList());
     }
 }

@@ -13,10 +13,15 @@ function CreatePost({ onPostCreated }) {
 
         setLoading(true)
         try {
+            console.log('Creating post with content:', content.trim())
             const newPost = await call('/posts', 'POST', { content: content.trim() })
+            console.log('Post created successfully:', newPost)
             setContent('')
             if (onPostCreated) {
+                console.log('Calling onPostCreated callback')
                 onPostCreated(newPost)
+            } else {
+                console.log('No onPostCreated callback provided')
             }
         } catch (err) {
             console.error('Failed to create post:', err)

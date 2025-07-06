@@ -1,10 +1,37 @@
-import { useApi } from '../hooks/useApi'
+import { useEffect, useState } from 'react'
+import { useApiCall } from '../hooks/useApi'
+import CreatePost from '../components/Posts/CreatePost'
 import PostList from '../components/Posts/PostList'
 
 function TimelinePage() {
-    const { data: posts, loading, error } = useApi('/posts/timeline')
+    const { call, loading, error } = useApiCall()
+    const [posts, setPosts] = useState([])
 
-    if (loading) {
+    const fetchPosts = async () => {
+        try {
+            const result = await call('/posts/timeline')
+            setPosts(result)
+        } catch (err) {
+            console.error('Failed to fetch timeline:', err)
+        }
+    }
+
+    useEffect(() => {
+        fetchPosts()
+    }, [])
+
+    const handlePostCreated = (newPost) => {
+        console.log('New post created:', newPost)
+        setPosts(prev => [newPost, ...prev])
+        // Also refresh to get the latest data
+        setTimeout(() => fetchPosts(), 100)
+    }
+
+    const handlePostDeleted = (postId) => {
+        setPosts(prev => prev.filter(post => post.id !== postId))
+    }
+
+    if (loading && !posts.length) {
         return <div className="loading">Loading timeline...</div>
     }
 
@@ -15,9 +42,11 @@ function TimelinePage() {
     return (
         <div>
             <h1 className="page-title">Timeline</h1>
+            <CreatePost onPostCreated={handlePostCreated} />
             <PostList
                 posts={posts}
                 emptyMessage="Your timeline is empty. Follow some users to see their posts!"
+                onPostDeleted={handlePostDeleted}
             />
         </div>
     )

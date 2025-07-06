@@ -13,7 +13,7 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByAuthorUsernameOrderByCreatedAtDesc(String username, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE p.author IN " +
+    @Query("SELECT p FROM Post p WHERE p.author.username = :username OR p.author IN " +
             "(SELECT f.followed FROM Follow f WHERE f.follower.username = :username) " +
             "ORDER BY p.createdAt DESC")
     List<Post> findFollowedUsersPosts(@Param("username") String username, Pageable pageable);
