@@ -132,8 +132,14 @@ function PostItem({ post, currentUser, onDelete }) {
                     <button
                         className="toggle-comments-button"
                         onClick={() => setShowComments(v => !v)}
+                        aria-label="Show comments"
+                        title="Show comments"
+                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                     >
-                        Comments
+                        {/* Speech bubble SVG icon */}
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1976d2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg>
                     </button>
                 </div>
                 {isOwnPost && (
