@@ -8,6 +8,9 @@ function CommentForm({ postId, onCommentAdded }) {
     const [listening, setListening] = useState(false)
     const [speechError, setSpeechError] = useState(null)
     const recognitionRef = useRef(null)
+    const CHAR_LIMIT = 140;
+    const charCount = content.length;
+    const overCharLimit = charCount > CHAR_LIMIT;
 
     const startListening = () => {
         setSpeechError(null)
@@ -47,7 +50,7 @@ function CommentForm({ postId, onCommentAdded }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!content.trim()) return
+        if (!content.trim() || overCharLimit) return
         setLoading(true)
         setError(null)
         try {
@@ -64,16 +67,20 @@ function CommentForm({ postId, onCommentAdded }) {
     return (
         <form className="comment-form" onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-                <input
-                    type="text"
-                    className="comment-input"
-                    placeholder="Add a comment..."
-                    value={content}
-                    onChange={e => setContent(e.target.value)}
-                    maxLength={500}
-                    disabled={loading}
-                    style={{ width: '70%' }}
-                />
+                <div style={{ position: 'relative', width: '100%', maxWidth: '100%' }}>
+                    <textarea
+                        className="comment-input"
+                        placeholder="Add a comment..."
+                        value={content}
+                        onChange={e => setContent(e.target.value)}
+                        maxLength={CHAR_LIMIT}
+                        disabled={loading}
+                        style={{ width: '100%', minHeight: 38, paddingRight: 60, boxSizing: 'border-box' }}
+                    />
+                    <span style={{ position: 'absolute', right: 8, bottom: 6, fontSize: '0.92em', color: overCharLimit ? '#e74c3c' : '#555', background: 'transparent', pointerEvents: 'none' }}>
+                        {charCount} / {CHAR_LIMIT}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={listening ? stopListening : startListening}
@@ -92,12 +99,13 @@ function CommentForm({ postId, onCommentAdded }) {
                 <button
                     type="submit"
                     className="comment-submit"
-                    disabled={loading || !content.trim()}
+                    disabled={loading || !content.trim() || overCharLimit}
                     style={{ marginLeft: '0.5rem' }}
                 >
                     {loading ? 'Posting...' : 'Comment'}
                 </button>
             </div>
+            {overCharLimit && <div style={{ fontSize: '0.95em', color: '#e74c3c', marginTop: '0.3rem' }}>Character limit exceeded!</div>}
             {listening && <div style={{ color: '#1976d2', fontWeight: 'bold', marginTop: 4 }}>Listening...</div>}
             {speechError && <div style={{ color: 'red', marginTop: 4 }}>{speechError}</div>}
             {error && <div className="error-message" style={{ marginTop: '0.5rem' }}>{error}</div>}

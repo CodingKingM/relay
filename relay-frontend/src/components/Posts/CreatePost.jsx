@@ -8,6 +8,9 @@ function CreatePost({ onPostCreated }) {
     const [listening, setListening] = useState(false)
     const recognitionRef = useRef(null)
     const [speechError, setSpeechError] = useState(null)
+    const CHAR_LIMIT = 240;
+    const charCount = content.length;
+    const overCharLimit = charCount > CHAR_LIMIT;
 
     const startListening = () => {
         setSpeechError(null)
@@ -47,7 +50,7 @@ function CreatePost({ onPostCreated }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        if (!content.trim()) return
+        if (!content.trim() || overCharLimit) return
         setLoading(true)
         try {
             console.log('Creating post with content:', content.trim())
@@ -70,14 +73,20 @@ function CreatePost({ onPostCreated }) {
     return (
         <form className="post-form" onSubmit={handleSubmit}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <textarea
-                    className="post-textarea"
-                    placeholder="Relay to the world!"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    maxLength={500}
-                    disabled={loading}
-                />
+                <div style={{ position: 'relative', width: '100%' }}>
+                    <textarea
+                        className="post-textarea"
+                        placeholder="Relay to the world!"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        maxLength={CHAR_LIMIT}
+                        disabled={loading}
+                        style={{ width: '100%', minHeight: 80, paddingRight: 60, boxSizing: 'border-box' }}
+                    />
+                    <span style={{ position: 'absolute', right: 8, bottom: 6, fontSize: '0.92em', color: overCharLimit ? '#e74c3c' : '#555', background: 'transparent', pointerEvents: 'none' }}>
+                        {charCount} / {CHAR_LIMIT}
+                    </span>
+                </div>
                 <button
                     type="button"
                     onClick={listening ? stopListening : startListening}
@@ -94,19 +103,17 @@ function CreatePost({ onPostCreated }) {
                     )}
                 </button>
             </div>
+            {overCharLimit && <div style={{ fontSize: '0.95em', color: '#e74c3c', marginTop: '0.3rem' }}>Character limit exceeded!</div>}
             {listening && <div style={{ color: '#1976d2', fontWeight: 'bold', marginTop: 4 }}>Listening...</div>}
             {speechError && <div style={{ color: 'red', marginTop: 4 }}>{speechError}</div>}
             <div className="post-form-actions" style={{ justifyContent: 'flex-start' }}>
                 <button
                     type="submit"
                     className="post-button"
-                    disabled={loading || !content.trim()}
+                    disabled={loading || !content.trim() || overCharLimit}
                 >
                     {loading ? 'Posting...' : 'Post'}
                 </button>
-                <span style={{ fontSize: '0.875rem', color: '#7f8c8d' }}>
-                    {content.length}/500
-                </span>
             </div>
         </form>
     )
