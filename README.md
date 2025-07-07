@@ -125,7 +125,7 @@ All AI-generated code was reviewed, tested, and adapted to fit the project requi
   ./mvnw test
   ```
 - Frontend:  
-  (Add instructions if you have frontend tests)
+  (No frontend tests)
 
 ---
 
