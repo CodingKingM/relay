@@ -177,7 +177,7 @@ function MyProfilePage() {
             {error && <div className="error-message" style={{ marginTop: '1rem' }}>{error}</div>}
         </div>
         <div>
-            <h2 className="page-title" style={{ textAlign: 'center', margin: '2rem 0 1.5rem' }}>My Posts</h2>
+            <h2 className="page-title" style={{ textAlign: 'left', margin: '2rem 0 1.5rem' }}>My Posts</h2>
             {postsLoading && <div className="loading">Loading posts...</div>}
             {postsError && <div className="error-message">Error loading posts: {postsError}</div>}
             {!postsLoading && !postsError && <PostList posts={posts || []} emptyMessage="You haven't posted anything yet." key={posts?.length} />}
@@ -185,12 +185,21 @@ function MyProfilePage() {
 
         {showFollowersFollowing && (
             <div className="modal-overlay" onClick={handleFollowersFollowingClose}>
-                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div
+                    className="modal-content"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="followers-following-title"
+                    tabIndex="-1"
+                    onClick={(e) => e.stopPropagation()}
+                >
                     <div className="modal-header">
-                        <h3>Followers & Following</h3>
+                        <h3 id="followers-following-title">Followers & Following</h3>
                         <button 
                             className="modal-close"
                             onClick={handleFollowersFollowingClose}
+                            tabIndex="0"
+                            aria-label="Close Followers and Following dialog"
                         >
                             ×
                         </button>

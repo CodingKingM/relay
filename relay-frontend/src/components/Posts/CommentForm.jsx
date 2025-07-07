@@ -1,10 +1,49 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { httpClient } from '../../utils/httpClient'
 
 function CommentForm({ postId, onCommentAdded }) {
     const [content, setContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [listening, setListening] = useState(false)
+    const [speechError, setSpeechError] = useState(null)
+    const recognitionRef = useRef(null)
+
+    const startListening = () => {
+        setSpeechError(null)
+        if (!('webkitSpeechRecognition' in window)) {
+            setSpeechError('Speech recognition not supported in this browser.')
+            alert('Speech recognition not supported in this browser.')
+            return
+        }
+        const recognition = new window.webkitSpeechRecognition()
+        recognition.lang = 'en-US'
+        recognition.interimResults = false
+        recognition.maxAlternatives = 1
+        recognition.onstart = () => { console.log('SpeechRecognition started') }
+        recognition.onaudiostart = () => { console.log('Audio capturing started') }
+        recognition.onspeechstart = () => { console.log('Speech has been detected') }
+        recognition.onspeechend = () => { console.log('Speech has stopped being detected') }
+        recognition.onresult = (event) => {
+            console.log('SpeechRecognition result:', event)
+            const transcript = event.results[0][0].transcript
+            setContent((prev) => prev + (prev ? ' ' : '') + transcript)
+        }
+        recognition.onend = () => { setListening(false); console.log('SpeechRecognition ended') }
+        recognition.onerror = (e) => {
+            setListening(false)
+            setSpeechError('Speech recognition error: ' + e.error)
+            console.error('SpeechRecognition error:', e)
+        }
+        recognition.start()
+        setListening(true)
+        recognitionRef.current = recognition
+    }
+
+    const stopListening = () => {
+        recognitionRef.current && recognitionRef.current.stop()
+        setListening(false)
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -24,24 +63,43 @@ function CommentForm({ postId, onCommentAdded }) {
 
     return (
         <form className="comment-form" onSubmit={handleSubmit} style={{ marginTop: '1rem' }}>
-            <input
-                type="text"
-                className="comment-input"
-                placeholder="Add a comment..."
-                value={content}
-                onChange={e => setContent(e.target.value)}
-                maxLength={500}
-                disabled={loading}
-                style={{ width: '70%' }}
-            />
-            <button
-                type="submit"
-                className="comment-submit"
-                disabled={loading || !content.trim()}
-                style={{ marginLeft: '0.5rem' }}
-            >
-                {loading ? 'Posting...' : 'Comment'}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                <input
+                    type="text"
+                    className="comment-input"
+                    placeholder="Add a comment..."
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    maxLength={500}
+                    disabled={loading}
+                    style={{ width: '70%' }}
+                />
+                <button
+                    type="button"
+                    onClick={listening ? stopListening : startListening}
+                    aria-label={listening ? 'Stop voice input' : 'Start voice input'}
+                    style={{ fontSize: '1.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
+                    tabIndex="0"
+                >
+                    {listening ? (
+                        // Stop icon SVG
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="#1976d2"/></svg>
+                    ) : (
+                        // Material Design Mic icon SVG
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3s-3 1.34-3 3v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z" fill="#1976d2"/></svg>
+                    )}
+                </button>
+                <button
+                    type="submit"
+                    className="comment-submit"
+                    disabled={loading || !content.trim()}
+                    style={{ marginLeft: '0.5rem' }}
+                >
+                    {loading ? 'Posting...' : 'Comment'}
+                </button>
+            </div>
+            {listening && <div style={{ color: '#1976d2', fontWeight: 'bold', marginTop: 4 }}>Listening...</div>}
+            {speechError && <div style={{ color: 'red', marginTop: 4 }}>{speechError}</div>}
             {error && <div className="error-message" style={{ marginTop: '0.5rem' }}>{error}</div>}
         </form>
     )

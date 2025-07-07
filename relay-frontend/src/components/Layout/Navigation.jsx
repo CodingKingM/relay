@@ -18,13 +18,14 @@ function Navigation() {
     const isActive = (path) => location.pathname === path
 
     return (
-        <nav className="navbar">
+        <nav className="navbar" role="navigation" aria-label="Main navigation">
             <div className="nav-container">
                 <Link to="/" className="nav-brand">Relay</Link>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <button
                         className="burger-menu"
-                        aria-label="Open navigation menu"
+                        aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+                        aria-controls="main-nav-links"
                         aria-expanded={menuOpen}
                         onClick={() => setMenuOpen(o => !o)}
                     >
@@ -33,7 +34,7 @@ function Navigation() {
                         <span className="burger-bar"></span>
                     </button>
                 </div>
-                <ul className={`nav-links${menuOpen ? ' open' : ''}`} onClick={() => setMenuOpen(false)}>
+                <ul className={`nav-links${menuOpen ? ' open' : ''}`} id="main-nav-links" onClick={() => setMenuOpen(false)}>
                     {isAuthenticated ? (
                         <>
                         <li>
@@ -81,6 +82,8 @@ function Navigation() {
                                     type="checkbox"
                                     checked={theme === 'dark'}
                                     onChange={toggleTheme}
+                                    aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                                    aria-pressed={theme === 'dark'}
                                 />
                                 <span className="slider">
                                     <span className="icon sun" aria-hidden="true">
@@ -117,6 +120,8 @@ function Navigation() {
                                     type="checkbox"
                                     checked={theme === 'dark'}
                                     onChange={toggleTheme}
+                                    aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                                    aria-pressed={theme === 'dark'}
                                 />
                                 <span className="slider">
                                     <span className="icon sun" aria-hidden="true">
