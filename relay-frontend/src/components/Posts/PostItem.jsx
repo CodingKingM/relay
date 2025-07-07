@@ -112,9 +112,21 @@ function PostItem({ post, currentUser, onDelete }) {
                         disabled={loading || isOwnPost}
                         title={isOwnPost ? "You can't like your own posts" : ""}
                     >
-                        <span>{liked ? '❤️' : '🤍'}</span>
-                        <span>
-                            {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                            {liked ? (
+                                // Filled heart SVG
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="#e25555" stroke="#e25555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ verticalAlign: 'middle' }}>
+                                    <path d="M12 21C12 21 4 13.36 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.36 16 21 16 21H12Z" />
+                                </svg>
+                            ) : (
+                                // Outlined heart SVG
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e25555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ verticalAlign: 'middle' }}>
+                                    <path d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.1 7.24 5.6 9.28c-1.5 2.04-.44 5.12 2.54 7.05L12 21.35l3.86-5.02c2.98-1.93 4.04-5.01 2.54-7.05-1.5-2.04-4.54-2.68-6.29-.64z" />
+                                </svg>
+                            )}
+                            <span style={{ marginLeft: 4 }}>
+                                {likeCount} {likeCount === 1 ? 'like' : 'likes'}
+                            </span>
                         </span>
                     </button>
                     <button
