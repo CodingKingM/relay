@@ -70,39 +70,49 @@ function CommentForm({ postId, onCommentAdded }) {
                 <div style={{ position: 'relative', width: '100%', maxWidth: '100%' }}>
                     <textarea
                         className="comment-input"
-                        placeholder="Add a comment..."
+                        placeholder="Relay back..."
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         maxLength={CHAR_LIMIT}
                         disabled={loading}
                         style={{ width: '100%', minHeight: 38, paddingRight: 60, boxSizing: 'border-box' }}
                     />
-                    <span style={{ position: 'absolute', right: 8, bottom: 6, fontSize: '0.92em', color: overCharLimit ? '#e74c3c' : '#555', background: 'transparent', pointerEvents: 'none' }}>
+                    <button
+                        type="button"
+                        onClick={listening ? stopListening : startListening}
+                        aria-label={listening ? 'Stop voice input' : 'Start voice input'}
+                        style={{ position: 'absolute', right: 8, bottom: 32, fontSize: '1.3rem', background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center', zIndex: 2 }}
+                        tabIndex="0"
+                    >
+                        {listening ? (
+                            // Stop icon SVG
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="#1976d2"/></svg>
+                        ) : (
+                            // Material Design Mic icon SVG
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3s-3 1.34-3 3v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z" fill="#1976d2"/></svg>
+                        )}
+                    </button>
+                    <span style={{ position: 'absolute', right: 8, bottom: 6, fontSize: '0.92em', color: overCharLimit ? '#e74c3c' : '#555', background: 'transparent', pointerEvents: 'none', zIndex: 1 }}>
                         {charCount} / {CHAR_LIMIT}
                     </span>
                 </div>
                 <button
-                    type="button"
-                    onClick={listening ? stopListening : startListening}
-                    aria-label={listening ? 'Stop voice input' : 'Start voice input'}
-                    style={{ fontSize: '1.5rem', background: 'none', border: 'none', cursor: 'pointer' }}
-                    tabIndex="0"
-                >
-                    {listening ? (
-                        // Stop icon SVG
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2" fill="#1976d2"/></svg>
-                    ) : (
-                        // Material Design Mic icon SVG
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3s-3 1.34-3 3v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z" fill="#1976d2"/></svg>
-                    )}
-                </button>
-                <button
                     type="submit"
                     className="comment-submit"
                     disabled={loading || !content.trim() || overCharLimit}
-                    style={{ marginLeft: '0.5rem' }}
+                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'none', border: 'none', borderRadius: 6, padding: '0.75rem 1rem', cursor: 'pointer', height: '40px' }}
+                    aria-label="Send comment"
+                    title="Send comment"
                 >
-                    {loading ? 'Posting...' : 'Comment'}
+                    {loading ? (
+                        'Posting...'
+                    ) : (
+                        // Send (paper plane) SVG icon
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1976d2" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M22 2L11 13" />
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                        </svg>
+                    )}
                 </button>
             </div>
             {overCharLimit && <div style={{ fontSize: '0.95em', color: '#e74c3c', marginTop: '0.3rem' }}>Character limit exceeded!</div>}
