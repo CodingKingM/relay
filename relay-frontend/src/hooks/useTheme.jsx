@@ -3,7 +3,6 @@ import { createContext, useContext, useEffect, useState } from 'react'
 const ThemeContext = createContext()
 
 export function ThemeProvider({ children }) {
-  // Check system preference
   const getDefaultTheme = () => {
     if (typeof window !== 'undefined' && window.localStorage) {
       const stored = localStorage.getItem('theme')

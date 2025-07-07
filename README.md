@@ -1,93 +1,134 @@
-# ics-wtp-relay
+# Microblogging Application – ICS WTP Relay
 
+## Overview
 
+This is a microblogging application developed for the Web Technology Project.  
+It allows users to register, log in, create posts, follow/unfollow users, like/unlike posts, comment, edit their 
+own profile and many more. 
+The project was developed individually, with progress tracked using a self-made Notion template.
 
-## Getting started
+---
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Technologies Used
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **Frontend:** React (Vite), Custom CSS
+- **Backend:** Spring Boot (Java 21), JPA, MariaDB, H2 (for tests)
+- **API Documentation:** OpenAPI/Swagger
+- **Testing:** JUnit (backend)
+- **Containerization:** Docker, Docker Compose
 
-## Add your files
+---
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Features
 
-```
-cd existing_repo
-git remote add origin https://gitlab.oth-regensburg.de/alm35943/ics-wtp-relay.git
-git branch -M main
-git push -uf origin main
-```
+### Core Features
+- User registration, login, and logout
+- Unique username enforcement
+- User search with follow/unfollow functionality
+- Create, view, and delete posts (max 280 characters)
+- Like posts (cannot like own post or like multiple times)
+- View own posts and timeline (most recent first)
+- Aggregated timeline of followed users' posts
 
-## Integrate with your tools
+### Extra Features
+- **Un-liking posts:** Users can remove their like from posts they previously liked.
+- **Commenting on posts:** Users can add comments to posts.
+- **Deleting one's own comments:** Users can delete their own comments from posts.
+- **Deleting one's own posts:** Users can delete their own posts.
+- **Managing one's own user profile:** Users can update their profile information (full name, email, biography).
+- **Displaying the user profile of a different user:** Users can view the public profile of other users.
+- **Dark/Light mode:** The application supports both dark and light themes for better accessibility and user preference.
+- **Accessibility features:** Includes Skip to Main Content link, visible focus styles, ARIA attributes for interactive elements, ARIA roles and attributes, keyboard accessibility, and speech-to-text input for posts and comments, following best practices for software for the global market.
+- **Responsive design:** Custom CSS for mobile and desktop.
+- **Comprehensive error handling:** User-friendly error messages throughout the UI.
+- **Test infrastructure:** JUnit test base class with session management and database cleaning.
+- **API utilities:** Centralized API client for frontend communication.
+- **Improved UX design:** Modern user experience and interface design, following best practices for global software.
 
-- [ ] [Set up project integrations](https://gitlab.oth-regensburg.de/alm35943/ics-wtp-relay/-/settings/integrations)
+---
 
-## Collaborate with your team
+## Project Management
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+Progress was tracked using a self-made Notion template, which helped organize weekly goals, Scrum-style updates, and keep a log of obstacles and solutions.  
+This ensured consistent progress and clear documentation for each project milestone.
 
-## Test and Deploy
+[View my Notion project management template here.](https://www.notion.so/Relay-Project-Tracker-1f044e974cbb80f19c28ff14e56dc354?source=copy_link)
 
-Use the built-in continuous integration in GitLab.
+---
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## AI Usage Disclosure
 
-***
+AI tools (Claude) were used to assist in the development of the following files and features:
 
-# Editing this README
+- `PostItem.jsx` – Post display and like/unlike logic
+- `PostService.java` – Backend post business logic
+- `PostControllerTest.java` – Backend test for post controller
+- `RelayControllerTestBase.java` – Backend test infrastructure
+- `UserControllerTest.java` – Backend test for user controller
+- `FollowersFollowing.jsx` – Followers/following UI and logic
+- `useAuth.js` – Authentication hook
+- `MyProfilePage.jsx` – Profile page logic/UI
+- `httpClient.js` – API communication utilities
+- `App.css` – Custom CSS styling
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+**In each of these files, a comment at the top specifies the use of AI and the prompt or purpose.  
+All AI-generated code was reviewed, tested, and adapted to fit the project requirements.**
 
-## Suggestions for a good README
+---
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+## Setup Instructions
 
-## Name
-Choose a self-explaining name for your project.
+### Prerequisites
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+- Node.js (v18+)
+- Java 21
+- Docker & Docker Compose
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+### Backend
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+1. `cd relay-backend`
+2. Copy or edit `src/main/resources/application.properties` for your MariaDB setup.
+3. Run with Maven:
+   ```
+   ./mvnw spring-boot:run
+   ```
+4. API docs available at: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+### Frontend
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+1. `cd relay-frontend`
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start development server:
+   ```
+   npm run dev
+   ```
+4. The app will be available at: [http://localhost:5173](http://localhost:5173)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Docker (Full Stack)
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+1. From the project root:
+   ```
+   docker-compose up --build
+   ```
+2. The frontend will be at [http://localhost](http://localhost) and the backend at [http://localhost:8080](http://localhost:8080).
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+---
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+## Testing
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+- Backend:  
+  ```
+  cd relay-backend
+  ./mvnw test
+  ```
+- Frontend:  
+  (Add instructions if you have frontend tests)
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+---
 
 ## License
-For open source projects, say how it is licensed.
+This project is copyright © Malek Alsibai 2025.  
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.

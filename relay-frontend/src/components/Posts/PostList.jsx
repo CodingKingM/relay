@@ -6,7 +6,6 @@ function PostList({ posts, emptyMessage = 'No posts yet', onPostDeleted }) {
     const { user } = useAuth()
     const [postList, setPostList] = useState(posts)
 
-    // Sync internal state with posts prop
     useEffect(() => {
         setPostList(posts)
     }, [posts])

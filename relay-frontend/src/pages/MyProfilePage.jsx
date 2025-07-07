@@ -1,3 +1,5 @@
+// Profile management developed with claude ai guidance for form handling and validation
+// Used ai for react component patterns and state management implementation
 import { useEffect, useState } from 'react'
 import { httpClient } from '../utils/httpClient'
 import { useAuth } from '../hooks/useAuth'

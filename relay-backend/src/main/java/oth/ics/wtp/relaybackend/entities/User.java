@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.EAGER;
-import static jakarta.persistence.FetchType.LAZY;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,9 +36,6 @@ public class User {
     @JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
-    // Removed ManyToMany relationship to avoid conflict with Follow entity
-    // The Follow entity will handle the follow relationships
-
     @OneToMany(mappedBy = "user", fetch = EAGER, cascade = ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Like> likes = new ArrayList<>();
@@ -66,7 +62,6 @@ public class User {
         return registeredAt;
     }
 
-    // Following and followers are now handled by the Follow entity
 
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }

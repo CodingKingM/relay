@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import oth.ics.wtp.relaybackend.dtos.CreatePostDto;
 import oth.ics.wtp.relaybackend.dtos.PostDto;
 import oth.ics.wtp.relaybackend.dtos.CommentDto;
-import oth.ics.wtp.relaybackend.entities.Comment;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.services.AuthService;
 import oth.ics.wtp.relaybackend.services.PostService;
