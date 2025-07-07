@@ -16,22 +16,22 @@
 }
 
 .dark-theme {
-  --bg: #0d1117;
-  --text: #c9d1d9;
-  --text-muted: #8b949e;
-  --card-bg: #161b22;
-  --navbar-bg: #161b22;
-  --navbar-text: #c9d1d9;
-  --primary: #238636;
-  --primary-hover: #2ea043;
-  --button-bg: #238636;
+  --bg: #121212;
+  --text: #E0E0E0;
+  --text-muted: #B0B0B0;
+  --card-bg: #1A1A1A;
+  --navbar-bg: #181818;
+  --navbar-text: #E0E0E0;
+  --primary: #90caf9;
+  --primary-hover: #64b5f6;
+  --button-bg: #1976d2;
   --button-text: #fff;
-  --button-disabled: #21262d;
-  --error-bg: #da3633;
-  --success-bg: #238636;
-  --input-bg: #0d1117;
-  --input-border: #30363d;
-  --border: #30363d;
+  --button-disabled: #333;
+  --error-bg: #e57373;
+  --success-bg: #66bb6a;
+  --input-bg: #181818;
+  --input-border: #333;
+  --border: #222;
 }
 
 body, .app {
@@ -1180,4 +1180,11 @@ body, .app {
   .nav-container {
     position: relative;
   }
+}
+
+.dark-theme .form-input:focus,
+.dark-theme .comment-input:focus,
+.dark-theme .post-textarea:focus,
+.dark-theme .search-input:focus {
+  background: #232323;
 }
