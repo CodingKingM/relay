@@ -42,6 +42,7 @@ function RegisterForm() {
         <div className="form-container">
             <h2 className="form-title">Join Relay</h2>
 
+            {/* Error handling: User is notified if passwords do not match or registration fails */}
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
