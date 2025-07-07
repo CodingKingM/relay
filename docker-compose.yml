@@ -31,7 +31,7 @@ services:
     build:
       context: ./relay-frontend
       args:
-        - API_URL=http://localhost:8080
+        - API_URL=http://localhost:8080/api
     container_name: relay-frontend
     restart: always
     depends_on:

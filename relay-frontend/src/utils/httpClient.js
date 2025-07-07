@@ -1,6 +1,6 @@
 // HTTP client utility developed with claude ai assistance for API communication patterns
 // Used ai for request handling, authentication and error management strategies
-const API_BASE_URL = '/api'
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * The core request function. It's now configured to always send cookies.
