@@ -61,6 +61,10 @@ function UserProfilePage() {
         }
     }
 
+    const handleFollowersFollowingClose = () => {
+        setShowFollowersFollowing(false)
+    }
+
     if (userLoading || postsLoading) {
         return <div className="loading">Loading profile...</div>
     }
@@ -137,24 +141,33 @@ function UserProfilePage() {
                 </div>
             )}
 
-            <h2 className="page-title" style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Posts by {username}</h2>
+            <h2 className="page-title" style={{ textAlign: 'left', marginBottom: '1.5rem' }}>Posts by {username}</h2>
             <PostList posts={posts || []} />
 
             {showFollowersFollowing && (
-                <div className="modal-overlay" onClick={() => setShowFollowersFollowing(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <div className="modal-overlay" onClick={handleFollowersFollowingClose}>
+                    <div
+                        className="modal-content"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="followers-following-title"
+                        tabIndex="-1"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className="modal-header">
-                            <h3>Followers & Following</h3>
+                            <h3 id="followers-following-title">Followers & Following</h3>
                             <button 
                                 className="modal-close"
-                                onClick={() => setShowFollowersFollowing(false)}
+                                onClick={handleFollowersFollowingClose}
+                                tabIndex="0"
+                                aria-label="Close Followers and Following dialog"
                             >
                                 ×
                             </button>
                         </div>
                         <FollowersFollowing 
                             username={username} 
-                            onUserClick={() => setShowFollowersFollowing(false)}
+                            onUserClick={handleFollowersFollowingClose}
                         />
                     </div>
                 </div>

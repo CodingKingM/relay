@@ -25,8 +25,9 @@ function AppContent() {
 
     return (
         <div className="app">
+            <a href="#main-content" className="skip-link">Skip to main content</a>
             <Navigation />
-            <main className="main-content">
+            <main className="main-content" id="main-content">
                 <Routes>
                     <Route path="/" element={isAuthenticated ? <Navigate to="/timeline" /> : <Navigate to="/login" />} />
                     <Route path="/login" element={isAuthenticated ? <Navigate to="/timeline" /> : <LoginForm />} />
