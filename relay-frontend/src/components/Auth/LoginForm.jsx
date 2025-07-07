@@ -30,6 +30,7 @@ function LoginForm() {
         <div className="form-container">
             <h2 className="form-title">Login to Relay</h2>
 
+            {/* Error handling: User is notified if login fails (e.g., wrong credentials) */}
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
