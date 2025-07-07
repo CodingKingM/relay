@@ -15,7 +15,6 @@ function TimelinePage() {
             console.error('Failed to fetch timeline:', err)
         }
     }
-
     useEffect(() => {
         fetchPosts()
     }, [])
@@ -23,10 +22,8 @@ function TimelinePage() {
     const handlePostCreated = (newPost) => {
         console.log('New post created:', newPost)
         setPosts(prev => [newPost, ...prev])
-        // Also refresh to get the latest data
         setTimeout(() => fetchPosts(), 100)
     }
-
     const handlePostDeleted = (postId) => {
         setPosts(prev => prev.filter(post => post.id !== postId))
     }

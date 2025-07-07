@@ -1,3 +1,5 @@
+// Developed with claude AI assistance for springboot service
+// Used ai for business logic patterns and validation implementation
 package oth.ics.wtp.relaybackend.services;
 
 import org.springframework.data.domain.PageRequest;
@@ -94,7 +96,7 @@ public class PostService {
         }
         Like like = new Like(user, post);
         likeRepository.save(like);
-        postRepository.findById(postId); // Reload post to update like count
+        postRepository.findById(postId);
 
         return toDto(post, username);
     }
@@ -109,7 +111,7 @@ public class PostService {
 
         likeRepository.deleteByUserAndPost(username, postId);
         likeRepository.flush();
-        postRepository.findById(postId); // Reload post to update like count
+        postRepository.findById(postId);
     }
 
     @Transactional
@@ -119,8 +121,7 @@ public class PostService {
         if (!post.getAuthor().getUsername().equals(username)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can only delete your own posts");
         }
-        
-        // Use native SQL to ensure deletion with correct column names
+
         entityManager.createNativeQuery("DELETE FROM likes WHERE post_id = :postId")
                 .setParameter("postId", postId)
                 .executeUpdate();

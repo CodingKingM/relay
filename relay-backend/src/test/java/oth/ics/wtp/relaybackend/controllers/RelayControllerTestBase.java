@@ -1,3 +1,6 @@
+// Test base class developed with claude ai assistance for testing
+// Used ai for session management patterns and database cleanup
+// Manually customized for test isolation and user setup
 package oth.ics.wtp.relaybackend.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,9 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.*;
-import oth.ics.wtp.relaybackend.services.UserService;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;

@@ -1,3 +1,6 @@
+// Test framework developed with claude ai guidance testing
+// Used ai for test structure and mock request implementation
+// Manually adapted for specific controller endpoints and coverage requirements
 package oth.ics.wtp.relaybackend.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;

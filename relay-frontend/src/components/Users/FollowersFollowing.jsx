@@ -1,3 +1,5 @@
+// Modal component developed with claude ai guidance for user relationship display
+// Used ai for React component structure and state handling patterns
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { httpClient } from '../../utils/httpClient'
@@ -17,7 +19,6 @@ function FollowersFollowing({ username, onUserClick }) {
             setError(null)
             
             try {
-                // Load both followers and following data
                 const [followersData, followingData] = await Promise.all([
                     httpClient.getFollowers(username),
                     httpClient.getFollowing(username)
@@ -44,7 +45,6 @@ function FollowersFollowing({ username, onUserClick }) {
                 await httpClient.followUser(targetUsername)
             }
 
-            // Update the appropriate list
             if (activeTab === 'followers') {
                 setFollowers(prev => 
                     prev.map(user => 

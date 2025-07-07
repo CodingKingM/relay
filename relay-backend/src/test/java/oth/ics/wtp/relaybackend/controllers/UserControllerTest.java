@@ -1,9 +1,11 @@
+// Authentication testing developed with claude ai guidance for test patterns
+// Used ai for mock request handling and assertion suggestions
+// Manually adapted for user management and follow functionality testing
 package oth.ics.wtp.relaybackend.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.server.ResponseStatusException;
 import oth.ics.wtp.relaybackend.dtos.*;
 import java.util.List;
