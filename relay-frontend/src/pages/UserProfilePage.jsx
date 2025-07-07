@@ -18,6 +18,7 @@ function UserProfilePage() {
     const [followLoading, setFollowLoading] = useState(false)
     const [followError, setFollowError] = useState(null)
     const [showFollowersFollowing, setShowFollowersFollowing] = useState(false)
+    const [userInfoState, setUserInfoState] = useState(null)
 
     useEffect(() => {
         const checkFollowStatus = async () => {
@@ -37,6 +38,10 @@ function UserProfilePage() {
         checkFollowStatus()
     }, [username, currentUser])
 
+    useEffect(() => {
+        if (userInfo) setUserInfoState(userInfo)
+    }, [userInfo])
+
     const handleFollow = async () => {
         setFollowLoading(true)
         setFollowError(null)
@@ -44,18 +49,23 @@ function UserProfilePage() {
         try {
             const newFollowState = !isFollowing
             setIsFollowing(newFollowState)
+            setUserInfoState(prev => prev ? {
+                ...prev,
+                followerCount: prev.followerCount + (newFollowState ? 1 : -1)
+            } : prev)
             if (isFollowing) {
                 await httpClient.unfollowUser(username)
             } else {
                 await httpClient.followUser(username)
             }
-
         } catch (err) {
             console.error('Failed to toggle follow:', err)
             setFollowError(err.message)
-
             setIsFollowing(!isFollowing)
-
+            setUserInfoState(prev => prev ? {
+                ...prev,
+                followerCount: prev.followerCount + (isFollowing ? 1 : -1)
+            } : prev)
         } finally {
             setFollowLoading(false)
         }
@@ -72,7 +82,7 @@ function UserProfilePage() {
     if (userError || !userInfo) {
         return (
             <div className="error-message">
-                User not found
+                User not found or profile could not be loaded.
                 <button
                     onClick={() => navigate('/search')}
                     style={{ marginLeft: '1rem' }}
@@ -89,33 +99,33 @@ function UserProfilePage() {
     return (
         <div>
             <div className="profile-card">
-                <div className="profile-avatar">{userInfo.username.charAt(0).toUpperCase()}</div>
-                <div className="profile-info" style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{userInfo.username}</div>
+                <div className="profile-avatar">{(userInfoState || userInfo).username.charAt(0).toUpperCase()}</div>
+                <div className="profile-info" style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{(userInfoState || userInfo).username}</div>
                 <div className="profile-info" style={{ color: '#555' }}>
-                    {userInfo.fullName ? userInfo.fullName : <span style={{ color: '#aaa', fontStyle: 'italic' }}>Full name not set</span>}
+                    {(userInfoState || userInfo).fullName ? (userInfoState || userInfo).fullName : <span style={{ color: '#aaa', fontStyle: 'italic' }}>Full name not set</span>}
                 </div>
                 <div className="profile-info" style={{ color: '#555' }}>
-                    {userInfo.email ? userInfo.email : <span style={{ color: '#aaa', fontStyle: 'italic' }}>Email not set</span>}
+                    {(userInfoState || userInfo).email ? (userInfoState || userInfo).email : <span style={{ color: '#aaa', fontStyle: 'italic' }}>Email not set</span>}
                 </div>
                 <div className="profile-info" style={{ color: '#555', marginBottom: '1rem' }}>
-                    {userInfo.biography ? userInfo.biography : <span style={{ color: '#aaa', fontStyle: 'italic' }}>No biography</span>}
+                    {(userInfoState || userInfo).biography ? (userInfoState || userInfo).biography : <span style={{ color: '#aaa', fontStyle: 'italic' }}>No biography</span>}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
                     <button 
                         className="follow-count-button"
                         onClick={() => setShowFollowersFollowing(true)}
                     >
-                        <b>Followers:</b> {userInfo.followerCount || 0}
+                        <b>Followers:</b> {(userInfoState || userInfo).followerCount || 0}
                     </button>
                     <button 
                         className="follow-count-button"
                         onClick={() => setShowFollowersFollowing(true)}
                     >
-                        <b>Following:</b> {userInfo.followingCount || 0}
+                        <b>Following:</b> {(userInfoState || userInfo).followingCount || 0}
                     </button>
                 </div>
                 {!isOwnProfile && currentUser && (
-                    <div style={{ marginTop: '1rem' }}>
+                    <div style={{ display: 'flex', justifyContent: 'center', marginTop: 0, marginBottom: '1rem' }}>
                         <button
                             className={`follow-button ${isFollowing ? 'following' : ''}`}
                             onClick={handleFollow}
@@ -126,11 +136,11 @@ function UserProfilePage() {
                                 : (isFollowing ? 'Unfollow' : 'Follow')
                             }
                         </button>
-                        {followError && (
-                            <div className="error-message" style={{ marginTop: '0.5rem' }}>
-                                {followError}
-                            </div>
-                        )}
+                    </div>
+                )}
+                {followError && (
+                    <div className="error-message" style={{ marginTop: '0.5rem' }}>
+                        {followError}
                     </div>
                 )}
             </div>
