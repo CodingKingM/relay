@@ -38,7 +38,7 @@ The project was developed individually, with progress tracked using a self-made 
 - **Managing one's own user profile:** Users can update their profile information (full name, email, biography).
 - **Displaying the user profile of a different user:** Users can view the public profile of other users.
 - **Dark/Light mode:** The application supports both dark and light themes for better accessibility and user preference.
-- **Accessibility features:** Includes Skip to Main Content link, visible focus styles, ARIA attributes for interactive elements, ARIA roles and attributes, keyboard accessibility, and speech-to-text input for posts and comments, following best practices for software for the global market.
+- **Accessibility features:** Includes Skip to Main Content link, visible focus styles, ARIA attributes for interactive elements, ARIA roles and attributes, keyboard accessibility, and speech-to-text input (works only on chrome and on edge browser) for posts and comments, following best practices for software for the global market.
 - **Responsive design:** Custom CSS for mobile and desktop.
 - **Comprehensive error handling:** User-friendly error messages throughout the UI.
 - **Test infrastructure:** JUnit test base class with session management and database cleaning.
