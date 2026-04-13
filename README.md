@@ -1,4 +1,4 @@
-# Microblogging Application – ICS WTP Relay
+# Microblogging Application – Relay
 
 ## Overview
 
