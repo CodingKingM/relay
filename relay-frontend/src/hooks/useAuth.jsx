@@ -45,36 +45,31 @@ export function AuthProvider({ children }) {
     }
 
     const createAccount = async (username, password) => {
+        setAuthError(null)
+        setIsLoading(true)
         try {
-            setAuthError(null)
-            setIsLoading(true)
-            // Use the new httpClient method
             await httpClient.registerUser(username, password)
-            // For a better user experience, automatically sign in after registration
-            return await signIn(username, password)
+            await signIn(username, password)
         } catch (error) {
             setAuthError(error.message)
-            return { success: false, error: error.message }
-        } finally {
             setIsLoading(false)
+            throw error
         }
+        setIsLoading(false)
     }
 
     const signIn = async (username, password) => {
+        setAuthError(null)
+        setIsLoading(true)
         try {
-            setAuthError(null)
-            setIsLoading(true)
-            // Use the dedicated authentication method from httpClient
             const userData = await httpClient.authenticateUser(username, password)
-            // Save the returned user data to the session
             saveSession(userData)
-            return { success: true }
         } catch (error) {
             setAuthError(error.message)
-            return { success: false, error: error.message }
-        } finally {
             setIsLoading(false)
+            throw error
         }
+        setIsLoading(false)
     }
 
     const signOut = async () => {
@@ -91,19 +86,15 @@ export function AuthProvider({ children }) {
 
     const resetError = () => setAuthError(null)
 
-    // The value provided to the context is now cleaner
     const value = {
         currentUser,
         isLoading,
         authError,
-        // Authentication status now depends only on currentUser
         isAuthenticated: !!currentUser,
         createAccount,
         signIn,
         signOut,
         resetError,
-
-        // Aliases for convenience
         user: currentUser,
         loading: isLoading,
         error: authError,
