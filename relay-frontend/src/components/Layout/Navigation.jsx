@@ -3,12 +3,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useTheme } from '../../hooks/useTheme.jsx'
 
 const RelayLogo = () => (
-    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
-        <circle cx="15" cy="15" r="14" fill="var(--primary)" opacity="0.18"/>
-        <circle cx="7" cy="15" r="3" fill="var(--primary)"/>
-        <circle cx="23" cy="15" r="3" fill="var(--primary)"/>
-        <path d="M10 15h10M19 11l4 4-4 4" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
+    <img src="/favicon-32x32.png" alt="" width="28" height="28" style={{ display: 'block' }} />
 )
 
 const HomeIcon = () => (
