@@ -26,8 +26,9 @@ public class UserControllerTest extends RelayControllerTestBase {
         assertEquals(username, registered.username());
         
         // Login user
-        UserDto loggedIn = controller.login(mockRequest(username, password));
-        assertEquals(username, loggedIn.username());
+        var loggedIn = controller.login(mockRequest(username, password));
+        assertEquals(username, loggedIn.user().username());
+        assertNotNull(loggedIn.token());
         
         // Logout user
         controller.logout(mockRequest(username, password));

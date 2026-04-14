@@ -2,13 +2,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 async function makeRequest(endpoint, options = {}) {
     const url = `${API_BASE_URL}${endpoint}`
+    const token = localStorage.getItem('relay_token')
 
     const config = {
         ...options,
-        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
-            ...options.headers,
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            ...options.headers, // options.headers last — Basic auth overrides Bearer for login/register
         },
     }
 

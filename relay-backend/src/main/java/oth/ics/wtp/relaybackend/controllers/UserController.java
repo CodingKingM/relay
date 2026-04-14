@@ -6,7 +6,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import oth.ics.wtp.relaybackend.JwtUtil;
 import oth.ics.wtp.relaybackend.dtos.CreateUserDto;
+import oth.ics.wtp.relaybackend.dtos.LoginResponseDto;
 import oth.ics.wtp.relaybackend.dtos.UserDto;
 import oth.ics.wtp.relaybackend.dtos.UserSearchDto;
 import oth.ics.wtp.relaybackend.entities.User;
@@ -23,11 +25,13 @@ public class UserController {
     private final UserService userService;
     private final AuthService authService;
     private final FollowService followService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, AuthService authService, FollowService followService) {
+    public UserController(UserService userService, AuthService authService, FollowService followService, JwtUtil jwtUtil) {
         this.userService = userService;
         this.authService = authService;
         this.followService = followService;
+        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,9 +49,10 @@ public class UserController {
 
     @SecurityRequirement(name = "basicAuth")
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public UserDto login(HttpServletRequest request) {
+    public LoginResponseDto login(HttpServletRequest request) {
         User user = authService.logIn(request);
-        return userService.getUserByUsername(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername());
+        return new LoginResponseDto(userService.getUserByUsername(user.getUsername()), token);
     }
 
     @SecurityRequirement(name = "basicAuth")
