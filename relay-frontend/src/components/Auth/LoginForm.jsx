@@ -41,7 +41,7 @@ function LoginForm() {
                         id="username"
                         className="form-input"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => { setUsername(e.target.value); setError('') }}
                         required
                         autoFocus
                     />
@@ -54,7 +54,7 @@ function LoginForm() {
                         id="password"
                         className="form-input"
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        onChange={(e) => { setPassword(e.target.value); setError('') }}
                         required
                     />
                 </div>
