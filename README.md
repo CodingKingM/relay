@@ -1,134 +1,119 @@
-# Microblogging Application – Relay
+# Relay — Microblogging Platform
 
-## Overview
+A full-stack microblogging application inspired by Twitter/X. Users can post short messages, follow each other, like and comment on posts, and manage their profile.
 
-This is a microblogging application developed for the Web Technology Project.  
-It allows users to register, log in, create posts, follow/unfollow users, like/unlike posts, comment, edit their 
-own profile and many more. 
-The project was developed individually, with progress tracked using a self-made Notion template.
+**Live demo:** _coming soon_
 
 ---
 
-## Technologies Used
+## Tech Stack
 
-- **Frontend:** React (Vite), Custom CSS
-- **Backend:** Spring Boot (Java 21), JPA, MariaDB, H2 (for tests)
-- **API Documentation:** OpenAPI/Swagger
-- **Testing:** JUnit (backend)
-- **Containerization:** Docker, Docker Compose
+| Layer | Technology |
+|---|---|
+| Frontend | React 19, React Router, Vite |
+| Backend | Java 21, Spring Boot 3, Spring Data JPA |
+| Database | MariaDB (production), H2 (tests) |
+| Auth | Session-based (HTTP-only cookies) with BCrypt password hashing |
+| API Docs | OpenAPI / Swagger |
+| Containerisation | Docker, Docker Compose |
 
 ---
 
 ## Features
 
-### Core Features
-- User registration, login, and logout
-- Unique username enforcement
-- User search with follow/unfollow functionality
-- Create, view, and delete posts (max 280 characters)
-- Like posts (cannot like own post or like multiple times)
-- View own posts and timeline (most recent first)
+- Register, log in, and log out
+- Create posts (max 280 characters)
+- Like and unlike posts (cannot like your own)
+- Comment on posts, delete your own comments
+- Follow and unfollow users
 - Aggregated timeline of followed users' posts
-
-### Extra Features
-- **Un-liking posts:** Users can remove their like from posts they previously liked.
-- **Commenting on posts:** Users can add comments to posts.
-- **Deleting one's own comments:** Users can delete their own comments from posts.
-- **Deleting one's own posts:** Users can delete their own posts.
-- **Managing one's own user profile:** Users can update their profile information (full name, email, biography).
-- **Displaying the user profile of a different user:** Users can view the public profile of other users.
-- **Dark/Light mode:** The application supports both dark and light themes for better accessibility and user preference.
-- **Accessibility features:** Includes Skip to Main Content link, visible focus styles, ARIA attributes for interactive elements, ARIA roles and attributes, keyboard accessibility, and speech-to-text input (works only on chrome and on edge browser) for posts and comments, following best practices for software for the global market.
-- **Responsive design:** Custom CSS for mobile and desktop.
-- **Comprehensive error handling:** User-friendly error messages throughout the UI.
-- **Test infrastructure:** JUnit test base class with session management and database cleaning.
-- **API utilities:** Centralized API client for frontend communication.
-- **Improved UX design:** Modern user experience and interface design, following best practices for global software.
+- User search
+- Edit your own profile (name, email, bio)
+- View other users' public profiles and follower / following counts
+- Dark / Light mode toggle
+- Responsive design (mobile and desktop)
+- Accessible: skip-to-content link, ARIA attributes, keyboard navigation, speech-to-text input (Chrome / Edge)
 
 ---
 
-## Project Management
-
-Progress was tracked using a self-made Notion template, which helped organize weekly goals, Scrum-style updates, and keep a log of obstacles and solutions.  
-This ensured consistent progress and clear documentation for each project milestone.
-
-[View my Notion project management template here.](https://www.notion.so/Relay-Project-Tracker-1f044e974cbb80f19c28ff14e56dc354?source=copy_link)
-
----
-
-## AI Usage Disclosure
-
-AI tools (Claude) were used to assist in the development of the following files and features:
-
-- `PostItem.jsx` – Post display and like/unlike logic
-- `PostService.java` – Backend post business logic
-- `PostControllerTest.java` – Backend test for post controller
-- `RelayControllerTestBase.java` – Backend test infrastructure
-- `UserControllerTest.java` – Backend test for user controller
-- `FollowersFollowing.jsx` – Followers/following UI and logic
-- `useAuth.js` – Authentication hook
-- `MyProfilePage.jsx` – Profile page logic/UI
-- `httpClient.js` – API communication utilities
-- `App.css` – Custom CSS styling
-
-**In each of these files, a comment at the top specifies the use of AI and the prompt or purpose.  
-All AI-generated code was reviewed, tested, and adapted to fit the project requirements.**
-
----
-
-## Setup Instructions
+## Running Locally
 
 ### Prerequisites
 
-- Node.js (v18+)
+- Node.js 18+
 - Java 21
-- Docker & Docker Compose
+- Docker & Docker Compose (easiest option)
 
-### Backend
+### Option A — Docker (recommended)
 
-1. `cd relay-backend`
-2. Copy or edit `src/main/resources/application.properties` for your MariaDB setup.
-3. Run with Maven:
-   ```
-   ./mvnw spring-boot:run
-   ```
-4. API docs available at: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+```bash
+docker-compose up --build
+```
 
-### Frontend
+- Frontend: http://localhost
+- Backend API: http://localhost:8080
+- Swagger UI: http://localhost:8080/swagger-ui.html
 
-1. `cd relay-frontend`
-2. Install dependencies:
-   ```
-   npm install
-   ```
-3. Start development server:
-   ```
-   npm run dev
-   ```
-4. The app will be available at: [http://localhost:5173](http://localhost:5173)
+### Option B — Manual
 
-### Docker (Full Stack)
+**Backend**
 
-1. From the project root:
-   ```
-   docker-compose up --build
-   ```
-2. The frontend will be at [http://localhost](http://localhost) and the backend at [http://localhost:8080](http://localhost:8080).
+```bash
+cd relay-backend
+# Copy .env.example to .env and fill in the values, then:
+export DB_URL=jdbc:mariadb://localhost:3306/relay?createDatabaseIfNotExist=true
+export DB_USERNAME=root
+export DB_PASSWORD=yourpassword
+./mvnw spring-boot:run
+```
+
+**Frontend**
+
+```bash
+cd relay-frontend
+npm install
+npm run dev
+```
+
+App runs at http://localhost:5173 — the Vite dev server proxies `/api` to the backend automatically.
+
+---
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values before running.
+
+| Variable | Description | Default |
+|---|---|---|
+| `DB_URL` | MariaDB JDBC connection string | `jdbc:mariadb://localhost:3306/relay` |
+| `DB_USERNAME` | Database user | `root` |
+| `DB_PASSWORD` | Database password | _(none)_ |
+| `COOKIE_SECURE` | Set `true` when running behind HTTPS | `false` |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed frontend origins | `http://localhost` |
+| `VITE_API_URL` | Backend API base URL used by the frontend build | `/api` |
 
 ---
 
 ## Testing
 
-- Backend:  
-  ```
-  cd relay-backend
-  ./mvnw test
-  ```
-- Frontend:  
-  (No frontend tests)
+```bash
+cd relay-backend
+./mvnw test
+```
+
+73 tests covering controllers, services, and authentication flows.
+
+---
+
+## Security
+
+- Passwords hashed with **BCrypt** (work factor 12, unique salt per hash)
+- Session cookies are `HttpOnly` — not readable by JavaScript
+- `Secure` flag enabled in production via the `COOKIE_SECURE` env var
+- No secrets committed to version control — all sensitive config via environment variables
 
 ---
 
 ## License
-This project is copyright © Malek Alsibai 2025.  
 
+Copyright © 2025 Malek Alsibai

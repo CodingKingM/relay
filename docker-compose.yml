@@ -3,35 +3,36 @@ services:
     image: mariadb:latest
     container_name: db
     restart: always
-
     environment:
-      MARIADB_ROOT_PASSWORD: asdf1234
+      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-localpassword}
       MARIADB_DATABASE: relay
     ports:
       - "3306:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost", "--password=asdf1234"]
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "--password=${DB_PASSWORD:-localpassword}"]
 
   relay-backend:
     build: ./relay-backend
     container_name: relay-backend
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/relay?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: asdf1234
+      DB_URL: jdbc:mariadb://db:3306/relay?createDatabaseIfNotExist=true
+      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_PASSWORD: ${DB_PASSWORD:-localpassword}
+      COOKIE_SECURE: false
 
   relay-frontend:
     build:
       context: ./relay-frontend
       args:
-        - API_URL=http://localhost:8080/api
+        - API_URL=${VITE_API_URL:-http://localhost:8080/api}
     container_name: relay-frontend
     restart: always
     depends_on:
