@@ -32,14 +32,15 @@ export function AuthProvider({ children }) {
     }, [])
 
     // saveSession no longer handles credentials
-    const saveSession = (userData) => {
+    const saveSession = (userData, token) => {
         localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(userData))
+        if (token) localStorage.setItem('relay_token', token)
         setCurrentUser(userData)
     }
 
-    // clearSession is simplified
     const clearSession = () => {
         localStorage.removeItem(STORAGE_KEYS.user)
+        localStorage.removeItem('relay_token')
         setCurrentUser(null)
         setAuthError(null)
     }
@@ -62,8 +63,8 @@ export function AuthProvider({ children }) {
         setAuthError(null)
         setIsLoading(true)
         try {
-            const userData = await httpClient.authenticateUser(username, password)
-            saveSession(userData)
+            const response = await httpClient.authenticateUser(username, password)
+            saveSession(response.user, response.token)
         } catch (error) {
             setAuthError(error.message)
             setIsLoading(false)

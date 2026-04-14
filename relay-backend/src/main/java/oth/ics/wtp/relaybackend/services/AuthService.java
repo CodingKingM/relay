@@ -64,24 +64,21 @@ public class AuthService {
     }
 
     public User getAuthenticatedUser(HttpServletRequest request) {
-        String userName = (String) request.getSession().getAttribute(SESSION_USER_NAME);
-
+        String userName = resolveUsername(request);
         if (userName == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Not authenticated");
         }
-
         return userRepository.findById(userName)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
     }
 
     public boolean isAuthenticated(HttpServletRequest request) {
-        String userName = (String) request.getSession().getAttribute(SESSION_USER_NAME);
+        String userName = resolveUsername(request);
         return userName != null && userRepository.existsByUsername(userName);
     }
 
     public Optional<String> getAuthenticatedUsername(HttpServletRequest request) {
-        String userName = (String) request.getSession().getAttribute(SESSION_USER_NAME);
-        return Optional.ofNullable(userName);
+        return Optional.ofNullable(resolveUsername(request));
     }
 
     public void requireUser(HttpServletRequest request, String username) {
@@ -90,6 +87,18 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                     "You can only access your own resources");
         }
+    }
+
+    /** Resolves the authenticated username from JWT attribute (production) or session (tests/fallback). */
+    private String resolveUsername(HttpServletRequest request) {
+        String fromJwt = (String) request.getAttribute("authenticatedUsername");
+        if (fromJwt != null) return fromJwt;
+
+        jakarta.servlet.http.HttpSession session = request.getSession(false);
+        if (session != null) {
+            return (String) session.getAttribute(SESSION_USER_NAME);
+        }
+        return null;
     }
 
     public String[] parseBasicAuth(String authHeader) {

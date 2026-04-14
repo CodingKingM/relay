@@ -1,6 +1,7 @@
 // Profile management developed with claude ai guidance for form handling and validation
 // Used ai for react component patterns and state management implementation
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { httpClient } from '../utils/httpClient'
 import { useAuth } from '../hooks/useAuth'
 import PostList from '../components/Posts/PostList'
@@ -8,7 +9,8 @@ import { useApi } from '../hooks/useApi'
 import FollowersFollowing from '../components/Users/FollowersFollowing'
 
 function MyProfilePage() {
-    const { user } = useAuth()
+    const { user, logout } = useAuth()
+    const navigate = useNavigate()
     const [profile, setProfile] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -100,39 +102,28 @@ function MyProfilePage() {
                     
                     {/* Add follower/following counts */}
                     <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', marginBottom: '1rem' }}>
-                        <button 
+                        <button
                             className="follow-count-button"
-                            onClick={async () => {
-                                console.log('Before fetch - Following count:', profile.followingCount)
-                                await fetchProfile()
-                                console.log('After fetch - Following count:', profile.followingCount)
-                                // Force a small delay to ensure state update is processed
-                                setTimeout(() => {
-                                    console.log('Before modal - Following count:', profile.followingCount)
-                                    setShowFollowersFollowing(true)
-                                }, 0)
-                            }}
+                            onClick={async () => { await fetchProfile(); setShowFollowersFollowing(true) }}
                         >
                             <b>Followers:</b> {profile.followerCount || 0}
                         </button>
-                        <button 
+                        <button
                             className="follow-count-button"
-                            onClick={async () => {
-                                console.log('Before fetch - Following count:', profile.followingCount)
-                                await fetchProfile()
-                                console.log('After fetch - Following count:', profile.followingCount)
-                                // Force a small delay to ensure state update is processed
-                                setTimeout(() => {
-                                    console.log('Before modal - Following count:', profile.followingCount)
-                                    setShowFollowersFollowing(true)
-                                }, 0)
-                            }}
+                            onClick={async () => { await fetchProfile(); setShowFollowersFollowing(true) }}
                         >
                             <b>Following:</b> {profile.followingCount || 0}
                         </button>
                     </div>
                     
                     <button className="form-button" style={{ marginTop: '1rem' }} onClick={() => setEdit(true)}>Edit Profile</button>
+                    <button
+                        className="form-button"
+                        style={{ marginTop: '0.75rem', background: 'transparent', color: 'var(--text-muted, #888)', border: '1px solid var(--border, #e5e7eb)' }}
+                        onClick={async () => { await logout(); navigate('/login') }}
+                    >
+                        Sign out
+                    </button>
                 </div>
             ) : (
                 <form onSubmit={handleSave}>
