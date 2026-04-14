@@ -1,0 +1,25 @@
+# Environment / secrets — never commit these
+.env
+*.env.local
+
+# Maven
+relay-backend/target/
+relay-backend/HELP.md
+relay-backend/.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# VS Code
+.vscode/
+
+# Node
+relay-frontend/node_modules/
+relay-frontend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
