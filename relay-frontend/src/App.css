@@ -71,12 +71,54 @@ body, .app {
   position: relative;
 }
 
-.nav-brand {
-  font-size: 1.7rem;
-  font-weight: bold;
-  color: var(--navbar-text);
+.nav-brand-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
-  letter-spacing: 1px;
+  color: var(--navbar-text);
+}
+
+.nav-brand-text {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--navbar-text);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-mobile-auth {
+  display: none;
+}
+
+.theme-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--navbar-text);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.theme-icon-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--primary);
+}
+
+.nav-logout-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
 }
 
 .nav-links {
@@ -106,142 +148,78 @@ body, .app {
   border-bottom: 2px solid var(--primary);
 }
 
-.theme-toggle-switch {
-  display: inline-flex;
-  align-items: center;
-  height: 32px;
-  min-width: 32px;
-  width: auto;
-  padding: 0 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-left: 0.25rem;
-  font-size: 1rem;
-  border-bottom: 2px solid transparent;
-  box-sizing: border-box;
-}
-.theme-toggle-switch:hover, .theme-toggle-switch:focus {
-  background: rgba(255,255,255,0.07);
-  border-bottom: 2px solid var(--primary);
-}
-.theme-toggle-switch input {
-  margin: 0;
-  width: 1.2em;
-  height: 1.2em;
-}
-.theme-toggle-switch .slider {
-  display: flex;
-  align-items: center;
-  height: 100%;
-}
-.theme-toggle-switch .icon {
-  width: 16px;
-  height: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.burger-menu {
-  display: none;
-  flex-direction: column;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  gap: 4px;
-}
-
-.burger-bar {
-  width: 25px;
-  height: 3px;
-  background-color: var(--navbar-text);
-  border-radius: 2px;
-  transition: 0.3s;
-}
-
-@media (max-width: 768px) {
-  .burger-menu {
-    display: flex;
-  }
-}
-
-@media (min-width: 769px) {
-  .burger-menu {
-    display: none;
-  }
-}
 
 @media (max-width: 768px) {
   .nav-container {
-    padding: 0 0;
-    position: relative;
-    z-index: 1200;
-    width: 100vw;
-    left: 0;
-    max-width: none;
+    padding: 0 16px;
   }
+
+  /* Hide desktop nav links on mobile */
   .nav-links {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    width: 100vw;
-    background: var(--navbar-bg);
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 8px 24px rgba(44,62,80,0.13);
-    flex-direction: column;
-    gap: 0;
-    padding: 0.5rem 0;
-    z-index: 1201;
-    transition: opacity 0.2s, transform 0.2s;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-10px);
+    display: none !important;
+  }
+
+  /* Show login/register links in nav bar for unauthenticated mobile users */
+  .nav-mobile-auth {
+    display: flex;
+    gap: 12px;
     align-items: center;
   }
-  .nav-links.open {
+
+  .nav-mobile-auth .nav-link {
+    font-size: 0.95rem;
+    padding: 0;
+  }
+
+  /* Main content gets bottom padding so it's not hidden behind bottom nav */
+  .main-content {
+    padding-bottom: 80px;
+  }
+}
+
+/* Bottom navigation bar */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--navbar-bg);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  z-index: 1100;
+  justify-content: space-around;
+  align-items: stretch;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 0.68rem;
+  font-weight: 500;
+  padding: 8px 4px;
+  transition: color 0.2s;
+  letter-spacing: 0.2px;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
     display: flex;
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-    align-items: center;
-  }
-  .nav-actions {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .nav-link {
-    padding: 1rem 2rem;
-    font-size: 1.1rem;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    width: 100vw;
-    text-align: center;
-    background: none;
-    justify-content: center;
-    display: flex;
-  }
-  .nav-link:last-child {
-    border-bottom: none;
-  }
-  
-  .nav-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1199;
   }
 }
 
 @media (min-width: 769px) {
-  .burger-menu {
-    display: none;
-  }
   .nav-links {
     display: flex !important;
     position: static;
@@ -252,11 +230,13 @@ body, .app {
     border-radius: 0;
     padding: 0;
   }
-  .nav-link {
-    padding: 0;
-    border-bottom: 2px solid transparent;
-    width: auto;
-    text-align: center;
+
+  .nav-mobile-auth {
+    display: none !important;
+  }
+
+  .nav-right {
+    /* Theme toggle only — login/register are in nav-links on desktop */
   }
 }
 

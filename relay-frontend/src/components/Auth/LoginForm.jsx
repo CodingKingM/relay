@@ -28,7 +28,7 @@ function LoginForm() {
 
     return (
         <div className="form-container">
-            <h2 className="form-title">Login to Relay</h2>
+            <h2 className="form-title">Welcome back</h2>
 
             {/* Error handling: User is notified if login fails (e.g., wrong credentials) */}
             {error && <div className="error-message">{error}</div>}
@@ -69,8 +69,8 @@ function LoginForm() {
             </form>
 
             <div className="form-footer">
-                Don't have an account? {' '}
-                <Link to="/register" className="form-link">Register here</Link>
+                Don't have an account?{' '}
+                <Link to="/register" className="form-link">Create one</Link>
             </div>
         </div>
     )
