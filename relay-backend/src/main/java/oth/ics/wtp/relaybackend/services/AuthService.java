@@ -39,16 +39,19 @@ public class AuthService {
             String password = parts[1];
 
             User user = userRepository.findById(userName)
-                    .orElseThrow(() -> new Exception("User not found"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No account found with that username"));
 
             if (!WeakCrypto.verifyPassword(password, user.getHashedPassword())) {
-                throw new Exception("Invalid password");
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect password");
             }
 
             request.getSession().setAttribute(SESSION_USER_NAME, userName);
 
             return user;
 
+        } catch (ResponseStatusException e) {
+            logOut(request);
+            throw e;
         } catch (Exception e) {
             logOut(request);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication failed");

@@ -16,11 +16,15 @@ async function makeRequest(endpoint, options = {}) {
         const response = await fetch(url, config)
 
         if (!response.ok) {
-            if (response.status === 401) throw new Error('Authentication failed')
+            let message
+            try {
+                const body = await response.json()
+                message = body.detail || body.message
+            } catch (_) {
+                try { message = await response.text() } catch (_) {}
+            }
             if (response.status === 403) throw new Error('Access denied')
-            if (response.status === 404) throw new Error('Resource not found')
-            const errorText = await response.text()
-            throw new Error(errorText || `Request failed with status ${response.status}`)
+            throw new Error(message || `Request failed with status ${response.status}`)
         }
 
         if (response.status === 204) return null

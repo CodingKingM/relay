@@ -32,7 +32,7 @@ function RegisterForm() {
             await register(username, password)
             navigate('/timeline')
         } catch (err) {
-            setError(err.message || 'Registration failed. Username might already be taken.')
+            setError(err.message || 'Registration failed. Please try again.')
         } finally {
             setLoading(false)
         }
@@ -53,7 +53,7 @@ function RegisterForm() {
                         id="username"
                         className="form-input"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => { setUsername(e.target.value); setError('') }}
                         required
                         autoFocus
                         placeholder="Choose a unique username"
