@@ -3,10 +3,10 @@ COPY pom.xml /build/pom.xml
 COPY .mvn /build/.mvn
 COPY src /build/src
 WORKDIR /build/
-RUN mvn package
+RUN mvn package -DskipTests
 
 FROM eclipse-temurin:21-jre
-COPY --from=build /build/target/relay-backend-0.0.1-SNAPSHOT.jar /app/relay-backend-0.0.1-SNAPSHOT.jar
+COPY --from=build /build/target/relay-backend-0.0.1-SNAPSHOT.jar /app/relay-backend.jar
 WORKDIR /app/
 EXPOSE 8080
-ENTRYPOINT ["java","-Dspring.datasource.url=jdbc:mariadb://db:3306/mensa?createDatabaseIfNotExist=true","-jar", "relay-backend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "relay-backend.jar"]
