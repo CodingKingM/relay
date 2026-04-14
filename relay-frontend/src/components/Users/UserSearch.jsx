@@ -104,23 +104,14 @@ function UserSearch() {
                                 <Link to={`/user/${user.username}`} className="user-info">
                                     {user.username}
                                 </Link>
-                                {(() => {
-                                    const shouldShowButton = currentUser?.username !== user.username;
-                                    console.log('Follow button debug:', {
-                                        currentUser: currentUser?.username,
-                                        userUsername: user.username,
-                                        shouldShowButton,
-                                        isEqual: currentUser?.username === user.username
-                                    });
-                                    return shouldShowButton ? (
-                                        <button
-                                            className={`follow-button ${user.isFollowing ? 'following' : ''}`}
-                                            onClick={() => handleFollow(user.username, user.isFollowing)}
-                                        >
-                                            {user.isFollowing ? 'Unfollow' : 'Follow'}
-                                        </button>
-                                    ) : null;
-                                })()}
+                                {currentUser?.username !== user.username && (
+                                    <button
+                                        className={`follow-button ${user.isFollowing ? 'following' : ''}`}
+                                        onClick={() => handleFollow(user.username, user.isFollowing)}
+                                    >
+                                        {user.isFollowing ? 'Unfollow' : 'Follow'}
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
