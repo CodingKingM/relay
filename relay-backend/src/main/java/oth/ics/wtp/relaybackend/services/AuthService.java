@@ -38,12 +38,10 @@ public class AuthService {
             String userName = parts[0];
             String password = parts[1];
 
-            String hashedPassword = WeakCrypto.hashPassword(password);
-
             User user = userRepository.findById(userName)
                     .orElseThrow(() -> new Exception("User not found"));
 
-            if (!user.getHashedPassword().equals(hashedPassword)) {
+            if (!WeakCrypto.verifyPassword(password, user.getHashedPassword())) {
                 throw new Exception("Invalid password");
             }
 

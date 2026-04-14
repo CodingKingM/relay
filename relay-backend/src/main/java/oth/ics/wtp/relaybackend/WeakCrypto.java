@@ -1,33 +1,37 @@
 package oth.ics.wtp.relaybackend;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * Password hashing and Basic Auth utilities.
+ * Passwords are hashed with BCrypt (work factor 12), which is salted and
+ * slow by design — making brute-force attacks computationally infeasible.
+ */
 public class WeakCrypto {
-    private static final String SHA_256 = "SHA-256";
-    private static MessageDigest digest;
 
-    public static String base64decode(String authHeader) {
-        return new String(Base64.getDecoder().decode(authHeader), UTF_8);
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    /**
+     * Hashes a plain-text password with BCrypt.
+     * Each call produces a different hash (BCrypt embeds a random salt).
+     */
+    public static String hashPassword(String password) {
+        return encoder.encode(password);
     }
 
-    public static synchronized String hashPassword(String password) {
-        try {
-            if (digest == null) {
-                digest = MessageDigest.getInstance(SHA_256);
-            }
-            digest.reset();
-            byte[] hashedBytes = digest.digest(password.getBytes(UTF_8));
-            return new String(hashedBytes, UTF_8);
-        } catch (NoSuchAlgorithmException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
+    /**
+     * Verifies a plain-text password against a stored BCrypt hash.
+     */
+    public static boolean verifyPassword(String rawPassword, String storedHash) {
+        return encoder.matches(rawPassword, storedHash);
+    }
+
+    public static String base64decode(String encoded) {
+        return new String(Base64.getDecoder().decode(encoded), UTF_8);
     }
 
     public static String base64encode(String plainText) {
@@ -35,7 +39,6 @@ public class WeakCrypto {
     }
 
     public static String createBasicAuthHeader(String username, String password) {
-        String credentials = username + ":" + password;
-        return "Basic " + base64encode(credentials);
+        return "Basic " + base64encode(username + ":" + password);
     }
 }
