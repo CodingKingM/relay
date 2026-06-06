@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.server.ResponseStatusException;
-import oth.ics.wtp.relaybackend.WeakCrypto;
+import oth.ics.wtp.relaybackend.SecurityUtils;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
 import oth.ics.wtp.relaybackend.repositories.FollowRepository;
@@ -24,9 +24,9 @@ public class FollowServiceTest {
 
     @BeforeEach
     public void setup() {
-        userRepository.save(new User("user1", WeakCrypto.hashPassword("pass1")));
-        userRepository.save(new User("user2", WeakCrypto.hashPassword("pass2")));
-        userRepository.save(new User("user3", WeakCrypto.hashPassword("pass3")));
+        userRepository.save(new User("user1", SecurityUtils.hashPassword("pass1")));
+        userRepository.save(new User("user2", SecurityUtils.hashPassword("pass2")));
+        userRepository.save(new User("user3", SecurityUtils.hashPassword("pass3")));
     }
 
     @Test

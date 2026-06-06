@@ -1,17 +1,21 @@
 services:
   db:
-    image: mariadb:latest
+    image: postgres:16
     container_name: db
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: ${DB_PASSWORD:-localpassword}
-      MARIADB_DATABASE: relay
+      POSTGRES_DB: relay
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-localpassword}
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "--password=${DB_PASSWORD:-localpassword}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d relay"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
   relay-backend:
     build: ./relay-backend
@@ -23,8 +27,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_URL: jdbc:mariadb://db:3306/relay?createDatabaseIfNotExist=true
-      DB_USERNAME: ${DB_USERNAME:-root}
+      DB_URL: jdbc:postgresql://db:5432/relay
+      DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-localpassword}
       COOKIE_SECURE: false
 
@@ -41,4 +45,4 @@ services:
       - "80:80"
 
 volumes:
-  mariadb_data:
+  postgres_data:

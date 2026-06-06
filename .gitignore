@@ -19,6 +19,7 @@ relay-backend/.mvn/wrapper/maven-wrapper.jar
 # Node
 relay-frontend/node_modules/
 relay-frontend/dist/
+relay-frontend/.vite/
 
 # OS
 .DS_Store

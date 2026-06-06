@@ -2,8 +2,6 @@
 
 A full-stack microblogging application inspired by Twitter/X. Users can post short messages, follow each other, like and comment on posts, and manage their profile.
 
-**Live demo:** _coming soon_
-
 ---
 
 ## Tech Stack
@@ -12,8 +10,8 @@ A full-stack microblogging application inspired by Twitter/X. Users can post sho
 |---|---|
 | Frontend | React 19, React Router, Vite |
 | Backend | Java 21, Spring Boot 3, Spring Data JPA |
-| Database | MariaDB (production), H2 (tests) |
-| Auth | Session-based (HTTP-only cookies) with BCrypt password hashing |
+| Database | PostgreSQL (production), H2 (tests) |
+| Auth | JWT (Bearer tokens); login via HTTP Basic, passwords hashed with BCrypt |
 | API Docs | OpenAPI / Swagger |
 | Containerisation | Docker, Docker Compose |
 
@@ -61,8 +59,8 @@ docker-compose up --build
 ```bash
 cd relay-backend
 # Copy .env.example to .env and fill in the values, then:
-export DB_URL=jdbc:mariadb://localhost:3306/relay?createDatabaseIfNotExist=true
-export DB_USERNAME=root
+export DB_URL=jdbc:postgresql://localhost:5432/relay
+export DB_USERNAME=postgres
 export DB_PASSWORD=yourpassword
 ./mvnw spring-boot:run
 ```
@@ -85,8 +83,8 @@ Copy `.env.example` to `.env` and fill in the values before running.
 
 | Variable | Description | Default |
 |---|---|---|
-| `DB_URL` | MariaDB JDBC connection string | `jdbc:mariadb://localhost:3306/relay` |
-| `DB_USERNAME` | Database user | `root` |
+| `DB_URL` | PostgreSQL JDBC connection string | `jdbc:postgresql://localhost:5432/relay` |
+| `DB_USERNAME` | Database user | `postgres` |
 | `DB_PASSWORD` | Database password | _(none)_ |
 | `COOKIE_SECURE` | Set `true` when running behind HTTPS | `false` |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated allowed frontend origins | `http://localhost` |
@@ -101,19 +99,19 @@ cd relay-backend
 ./mvnw test
 ```
 
-73 tests covering controllers, services, and authentication flows.
+73 integration tests (JUnit, H2) covering controllers, services, and authentication flows.
 
 ---
 
 ## Security
 
+- Stateless authentication via **JWT** (Bearer tokens); login over HTTP Basic, credentials verified server-side
 - Passwords hashed with **BCrypt** (work factor 12, unique salt per hash)
-- Session cookies are `HttpOnly` — not readable by JavaScript
-- `Secure` flag enabled in production via the `COOKIE_SECURE` env var
+- Session cookie (test/fallback path) is `HttpOnly`; `Secure` enabled in production via the `COOKIE_SECURE` env var
 - No secrets committed to version control — all sensitive config via environment variables
 
 ---
 
 ## License
 
-Copyright © 2025 Malek Alsibai
+Released under the **MIT License** — see [LICENSE](LICENSE).

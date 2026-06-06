@@ -3,7 +3,7 @@ package oth.ics.wtp.relaybackend.services;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import oth.ics.wtp.relaybackend.WeakCrypto;
+import oth.ics.wtp.relaybackend.SecurityUtils;
 import oth.ics.wtp.relaybackend.dtos.CreateUserDto;
 import oth.ics.wtp.relaybackend.dtos.UserDto;
 import oth.ics.wtp.relaybackend.dtos.UserSearchDto;
@@ -30,7 +30,7 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already exists");
         }
 
-        String hashedPassword = WeakCrypto.hashPassword(createUserDto.password());
+        String hashedPassword = SecurityUtils.hashPassword(createUserDto.password());
         User user = new User(createUserDto.username(), hashedPassword);
 
         User savedUser = userRepository.save(user);

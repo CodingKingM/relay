@@ -11,7 +11,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Passwords are hashed with BCrypt (work factor 12), which is salted and
  * slow by design — making brute-force attacks computationally infeasible.
  */
-public class WeakCrypto {
+public class SecurityUtils {
 
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 

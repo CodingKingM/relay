@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.server.ResponseStatusException;
-import oth.ics.wtp.relaybackend.WeakCrypto;
+import oth.ics.wtp.relaybackend.SecurityUtils;
 import oth.ics.wtp.relaybackend.dtos.CreatePostDto;
 import oth.ics.wtp.relaybackend.dtos.PostDto;
 import oth.ics.wtp.relaybackend.entities.Post;

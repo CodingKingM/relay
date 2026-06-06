@@ -5,7 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import oth.ics.wtp.relaybackend.WeakCrypto;
+import oth.ics.wtp.relaybackend.SecurityUtils;
 import oth.ics.wtp.relaybackend.entities.User;
 import oth.ics.wtp.relaybackend.repositories.UserRepository;
 
@@ -28,7 +28,7 @@ public class AuthService {
                 throw new Exception("Missing or invalid Authorization header");
             }
 
-            String decoded = WeakCrypto.base64decode(authHeader.substring("Basic ".length()));
+            String decoded = SecurityUtils.base64decode(authHeader.substring("Basic ".length()));
             String[] parts = decoded.split(":", 2);
 
             if (parts.length != 2) {
@@ -41,7 +41,7 @@ public class AuthService {
             User user = userRepository.findById(userName)
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect username or password"));
 
-            if (!WeakCrypto.verifyPassword(password, user.getHashedPassword())) {
+            if (!SecurityUtils.verifyPassword(password, user.getHashedPassword())) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Incorrect username or password");
             }
 
@@ -107,7 +107,7 @@ public class AuthService {
         }
 
         try {
-            String decoded = WeakCrypto.base64decode(authHeader.substring("Basic ".length()));
+            String decoded = SecurityUtils.base64decode(authHeader.substring("Basic ".length()));
             String[] parts = decoded.split(":", 2);
             return parts.length == 2 ? parts : null;
         } catch (Exception e) {
